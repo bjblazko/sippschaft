@@ -1,0 +1,24 @@
+# Go binary
+genealogy-app
+tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Air live-reload
+tmp/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

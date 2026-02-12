@@ -1,0 +1,10 @@
+name: Harold Smith
+sex: male
+birth: "1925-04-10"
+death: "2005-11-22"
+parents: []
+spouses:
+    - 1928-09-15_jones_margaret
+children:
+    - 1950-05-15_smith_arthur
+    - 1954-07-22_smith_alice

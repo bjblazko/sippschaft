@@ -1,0 +1,10 @@
+name: John Doe
+sex: male
+birth: "1980-01-01"
+parents:
+    - 1952-03-30_doe_frank
+    - 1954-07-22_smith_alice
+spouses:
+    - 1982-05-20_doe_jane
+children:
+    - 2010-01-01_doe_baby

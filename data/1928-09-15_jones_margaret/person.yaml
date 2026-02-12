@@ -1,0 +1,10 @@
+name: Margaret Jones
+sex: female
+birth: "1928-09-15"
+death: "2010-02-14"
+parents: []
+spouses:
+    - 1925-04-10_smith_harold
+children:
+    - 1950-05-15_smith_arthur
+    - 1954-07-22_smith_alice

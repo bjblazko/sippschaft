@@ -1,0 +1,11 @@
+name: Elizabeth Smith
+sex: female
+birth: "1976-11-30"
+parents:
+    - 1950-05-15_smith_arthur
+    - 1952-08-20_smith_martha
+spouses:
+    - 1974-11-12_brown_thomas
+children:
+    - 2002-09-05_brown_william
+    - 2005-12-12_brown_jessica

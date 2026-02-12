@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(air)",
+      "Bash(~/go/bin/air)"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+name: Martha Smith
+sex: female
+birth: "1952-08-20"
+parents: []
+spouses:
+    - 1950-05-15_smith_arthur
+children:
+    - 1973-02-14_smith_robert
+    - 1976-11-30_smith_elizabeth

@@ -1,0 +1,135 @@
+:root {
+    --bg-color: #f4f6f8;
+    --card-bg: #ffffff;
+    --text-color: #333;
+    --accent-color: #2c3e50;
+    --link-color: #3498db;
+    --border-radius: 8px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+main:has(#tree-container) {
+    max-width: none;
+    padding: 0;
+}
+
+#tree-container {
+    width: 100%;
+    height: 100%;
+    background: var(--card-bg);
+    overflow: hidden;
+}
+
+.profile-container {
+    max-width: 800px;
+}
+
+.profile-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.profile-card h1 {
+    margin-top: 0;
+    color: var(--accent-color);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.meta-info {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.meta-item .label {
+    font-weight: bold;
+    color: #666;
+    margin-right: 0.5rem;
+}
+
+.relationships {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.rel-group h3 {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.rel-group ul {
+    list-style: none;
+    padding: 0;
+}
+
+.rel-group li a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.rel-group li a:hover {
+    text-decoration: underline;
+}
+
+.biography {
+    font-size: 1.1rem;
+}
+
+.profile-photo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-photo img {
+    max-width: 250px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 4px solid #fff;
+}

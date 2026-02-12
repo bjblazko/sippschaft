@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+    <style>
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        button {
+            margin: 0 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        button.active {
+            background-color: #3498db;
+            color: white;
+            border: 1px solid #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="controls">
+        <button id="btn-force">Force View</button>
+        <button id="btn-classic" class="active">Classic View</button>
+    </div>
+    <header>
+        <h1>Family Tree App</h1>
+    </header>
+    <main>
+        <div id="tree-container"></div>
+    </main>
+    <script src="/static/js/tree.js"></script>
+</body>
+
+</html>

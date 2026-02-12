@@ -1,0 +1,11 @@
+name: Alice Smith
+sex: female
+birth: "1954-07-22"
+parents:
+    - 1925-04-10_smith_harold
+    - 1928-09-15_jones_margaret
+spouses:
+    - 1952-03-30_doe_frank
+children:
+    - 1980-01-01_doe_john
+    - 1985-06-15_doe_alex

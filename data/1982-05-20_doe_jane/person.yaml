@@ -1,0 +1,8 @@
+name: Jane Doe
+sex: female
+birth: "1982-05-20"
+parents: []
+spouses:
+    - 1980-01-01_doe_john
+children:
+    - 2010-01-01_doe_baby

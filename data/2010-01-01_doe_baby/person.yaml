@@ -1,0 +1,8 @@
+name: Baby Doe
+sex: male
+birth: "2010-01-01"
+parents:
+    - 1980-01-01_doe_john
+    - 1982-05-20_doe_jane
+spouses: []
+children: []

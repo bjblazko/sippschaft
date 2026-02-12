@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Person.Name}} - Family Tree</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="/">&larr; Back to Tree</a>
+        </nav>
+    </header>
+    <main class="profile-container">
+        <article class="profile-card">
+            {{if .Person.Photo}}
+            <div class="profile-photo">
+                <img src="{{.Person.Photo}}" alt="{{.Person.Name}}">
+            </div>
+            {{end}}
+            <h1>{{.Person.Name}}</h1>
+            <div class="meta-info">
+                <div class="meta-item">
+                    <span class="label">Born:</span>
+                    <span class="value">{{.Person.Birth}}</span>
+                </div>
+                {{if .Person.Death}}
+                <div class="meta-item">
+                    <span class="label">Died:</span>
+                    <span class="value">{{.Person.Death}}</span>
+                </div>
+                {{end}}
+                <div class="meta-item">
+                    <span class="label">Sex:</span>
+                    <span class="value">{{.Person.Sex}}</span>
+                </div>
+            </div>
+
+            <div class="biography">
+                {{.Content}}
+            </div>
+
+            <div class="relationships">
+                {{if .Person.Parents}}
+                <div class="rel-group">
+                    <h3>Parents</h3>
+                    <ul>
+                        {{range .Person.Parents}}
+                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+
+                {{if .Person.Spouses}}
+                <div class="rel-group">
+                    <h3>Spouses</h3>
+                    <ul>
+                        {{range .Person.Spouses}}
+                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+
+                {{if .Person.Children}}
+                <div class="rel-group">
+                    <h3>Children</h3>
+                    <ul>
+                        {{range .Person.Children}}
+                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+            </div>
+        </article>
+    </main>
+</body>
+
+</html>

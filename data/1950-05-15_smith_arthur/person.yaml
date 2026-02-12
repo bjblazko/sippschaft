@@ -1,0 +1,12 @@
+name: Arthur Smith
+sex: male
+birth: "1950-05-15"
+death: "2022-01-20"
+parents:
+    - 1925-04-10_smith_harold
+    - 1928-09-15_jones_margaret
+spouses:
+    - 1952-08-20_smith_martha
+children:
+    - 1973-02-14_smith_robert
+    - 1976-11-30_smith_elizabeth

@@ -1,0 +1,10 @@
+name: Frank Doe
+sex: male
+birth: "1952-03-30"
+death: "2018-06-15"
+parents: []
+spouses:
+    - 1954-07-22_smith_alice
+children:
+    - 1980-01-01_doe_john
+    - 1985-06-15_doe_alex
