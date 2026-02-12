@@ -55,14 +55,12 @@ C4Context
     System(sippschaft, "Sippschaft", "Go web server serving the family tree app")
 
     System_Ext(cdn_d3, "CDN: d3js.org", "Serves D3.js v7")
-    System_Ext(cdn_dagre, "CDN: cdnjs.cloudflare.com", "Serves Dagre 0.8.5")
     System_Ext(filesystem, "File System", "data/{person}/ folders")
 
     Rel(browser, sippschaft, "HTTP", "Views tree and profiles")
     Rel(editor, filesystem, "Edits", "YAML, Markdown, photos")
     Rel(sippschaft, filesystem, "Reads", "Person data at startup")
     Rel(browser, cdn_d3, "HTTPS", "Loads D3.js")
-    Rel(browser, cdn_dagre, "HTTPS", "Loads Dagre")
 ```
 
 ### Boundary: What is inside vs. outside the system
@@ -82,7 +80,7 @@ C4Context
 |----------|-----------|-----|
 | Go standard library for HTTP | No framework overhead, single binary, zero config | [ADR-001](adr/001-go-stdlib.md) |
 | Markdown files as data source | Human-readable, Git-friendly, no database | [ADR-002](adr/002-markdown-data.md) |
-| D3.js + Dagre for visualization | Industry-standard, supports both layout modes | [ADR-003](adr/003-d3-dagre.md) |
+| D3.js + custom layout for visualization | D3 for SVG rendering/zoom, custom genealogy-aware layout algorithm | [ADR-003](adr/003-d3-dagre.md) |
 | Goldmark for Markdown rendering | CommonMark-compliant, actively maintained | [ADR-004](adr/004-goldmark.md) |
 | Folder-per-person data structure | Co-locates metadata, biography, and assets | [ADR-006](adr/006-folder-per-person.md) |
 
@@ -98,7 +96,7 @@ block-beta
 
     block:frontend["Frontend (Browser)"]:3
         templates["HTML Templates\n(index.html, person.html)"]
-        js["tree.js\n(D3 + Dagre rendering)"]
+        js["tree.js\n(D3 + custom layout)"]
         css["style.css"]
     end
 
@@ -287,7 +285,8 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 |-----|-------|--------|
 | [001](adr/001-go-stdlib.md) | Use Go standard library over a web framework | Accepted |
 | [002](adr/002-markdown-data.md) | Markdown files as the data source (no database) | Accepted |
-| [003](adr/003-d3-dagre.md) | D3.js and Dagre for tree visualization | Accepted |
+| [003](adr/003-d3-dagre.md) | D3.js for tree visualization (Dagre removed) | Superseded by 007 |
+| [007](adr/007-custom-layout.md) | Custom genealogy layout replacing Dagre | Accepted |
 | [004](adr/004-goldmark.md) | Goldmark for Markdown rendering | Accepted |
 | [005](adr/005-yaml-frontmatter.md) | YAML frontmatter for person metadata | Superseded by 006 |
 | [006](adr/006-folder-per-person.md) | Folder-per-person data structure | Accepted |
@@ -300,9 +299,9 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 |---|-------------|----------|-------------|
 | R1 | No data validation | Medium | Referenced IDs (parents, spouses, children) are not checked for existence. Broken references fail silently in the UI. |
 | R2 | No tests | Medium | No unit or integration tests exist. Regressions can only be caught manually. |
-| R3 | CDN dependency | Low | D3.js and Dagre are loaded from external CDNs. The app will not render the tree without internet access. Could be mitigated by vendoring. |
+| R3 | CDN dependency | Low | D3.js is loaded from an external CDN. The app will not render the tree without internet access. Could be mitigated by vendoring. |
 | R4 | Unidirectional relationships | Medium | If Alice lists Bob as a child, Bob does not automatically list Alice as a parent. Both sides must be manually maintained, which is error-prone. |
 | R5 | No hot reload of data | Low | Person data is loaded once at startup. File changes require a server restart. Mitigated by using `air` during development. |
 | R6 | Hardcoded port | Low | Port 8080 is hardcoded in `main.go`. Not configurable via environment variable or flag. |
-| R7 | Dagre unmaintained | Low | Dagre's last release was 2019. The API is stable but no bug fixes or improvements should be expected. |
+| R7 | ~~Dagre unmaintained~~ | ~~Low~~ | ~~Resolved: Dagre replaced with custom genealogy layout algorithm.~~ |
 | R8 | Raw HTML injection | Low | Biography Markdown is rendered to HTML and inserted via `template.HTML` (unescaped). Safe as long as data files are author-controlled, but becomes a risk if user-submitted content is ever allowed. |

@@ -255,73 +255,234 @@ function renderForceTree(peopleMap) {
 
 function renderClassicTree(peopleMap) {
     const { width, height } = getContainerSize();
+    const NODE_W = 210, NODE_H = 60, H_GAP = 40, V_GAP = 80, SPOUSE_GAP = 20;
 
-    // Initialize Dagre graph
-    var g = new dagre.graphlib.Graph();
-    g.setGraph({ rankdir: 'TB', nodesep: 70, ranksep: 50 });
-    g.setDefaultEdgeLabel(function () { return {}; });
+    // === LAYOUT: Custom genealogy tree algorithm ===
 
-    const processedFamilies = new Set();
-
-    // Add nodes for People
+    // 1. Find root person (most descendants, no parents)
+    function countDesc(pid, vis) {
+        if (vis.has(pid)) return 0;
+        vis.add(pid);
+        const p = peopleMap[pid];
+        if (!p || !p.children) return 0;
+        let n = 0;
+        p.children.forEach(c => { if (peopleMap[c]) n += 1 + countDesc(c, vis); });
+        return n;
+    }
+    let rootId = null, maxD = -1;
     Object.values(peopleMap).forEach(p => {
-        // Increased height to fit dates
-        g.setNode(p.id, {
-            label: p.name,
-            lifeSpan: getLifeSpan(p),
-            sex: p.sex,
-            photo: p.photo,
-            width: 210,
-            height: 60,
-            type: 'person',
-            id: p.id
-        });
+        if (!p.parents || p.parents.length === 0) {
+            const d = countDesc(p.id, new Set());
+            if (d > maxD) { maxD = d; rootId = p.id; }
+        }
     });
+    if (!rootId) { rootId = Object.keys(peopleMap)[0]; }
 
-    // Process Families (unions) to solve the "sibling alignment" and "spouse" issues
-    Object.values(peopleMap).forEach(child => {
-        if (child.parents && child.parents.length > 0) {
-            // Sort parental IDs to create a unique family ID
-            const parents = [...child.parents].sort();
-            const familyId = "fam_" + parents.join("_");
+    // 2. Build tree by following children (avoid duplicates)
+    const treeChildren = {};
+    const inTree = new Set();
+    function buildTree(pid) {
+        if (inTree.has(pid)) return;
+        inTree.add(pid);
+        treeChildren[pid] = [];
+        const p = peopleMap[pid];
+        if (p.children) {
+            p.children.forEach(cid => {
+                if (peopleMap[cid] && !inTree.has(cid)) {
+                    treeChildren[pid].push(cid);
+                    buildTree(cid);
+                }
+            });
+        }
+    }
+    buildTree(rootId);
 
-            if (!processedFamilies.has(familyId)) {
-                // Create a "Family" node (invisible small dot)
-                g.setNode(familyId, { label: "", width: 10, height: 10, type: 'family' });
-                processedFamilies.add(familyId);
+    // 3. For each tree person, group their tree-children by spouse
+    function childrenBySpouse(pid) {
+        const children = treeChildren[pid] || [];
+        const groups = {};
+        children.forEach(cid => {
+            const child = peopleMap[cid];
+            if (!child || !child.parents) return;
+            const other = child.parents.find(p => p !== pid && peopleMap[p]);
+            const key = other || '__none__';
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(cid);
+        });
+        return groups;
+    }
 
-                // Link Parents -> Family Node
-                parents.forEach(parentId => {
-                    if (peopleMap[parentId]) {
-                        g.setEdge(parentId, familyId, { style: "stroke: #333; stroke-width: 2px;", arrow: false });
-                    }
+    // 4. Compute subtree widths (bottom-up)
+    const widthCache = {};
+    function subtreeW(pid) {
+        if (widthCache[pid] !== undefined) return widthCache[pid];
+        const p = peopleMap[pid];
+        const groups = childrenBySpouse(pid);
+        const spouseIds = (p.spouses || []).filter(s => peopleMap[s]);
+
+        if (spouseIds.length === 0 && Object.keys(groups).length === 0) {
+            widthCache[pid] = NODE_W;
+            return NODE_W;
+        }
+
+        // For each spouse, compute the family width
+        const famWidths = [];
+        spouseIds.forEach(sid => {
+            const kids = groups[sid] || [];
+            const coupleW = NODE_W * 2 + SPOUSE_GAP;
+            let kidsW = 0;
+            if (kids.length > 0) {
+                kidsW = kids.reduce((s, c) => s + subtreeW(c), 0) + (kids.length - 1) * H_GAP;
+            }
+            famWidths.push(Math.max(coupleW, kidsW));
+        });
+
+        // Handle children with unknown/single parent
+        const singleKids = groups['__none__'] || [];
+        if (singleKids.length > 0) {
+            const kidsW = singleKids.reduce((s, c) => s + subtreeW(c), 0) + (singleKids.length - 1) * H_GAP;
+            famWidths.push(Math.max(NODE_W, kidsW));
+        }
+
+        if (famWidths.length === 0) {
+            // Has spouses but no children at all: just couple width
+            widthCache[pid] = NODE_W * 2 + SPOUSE_GAP;
+            return widthCache[pid];
+        }
+
+        let total;
+        if (famWidths.length > 1) {
+            // Multi-spouse: lay out all children as one group
+            const coupleChainW = (spouseIds.length + 1) * NODE_W + spouseIds.length * SPOUSE_GAP;
+            let allKidsW = 0;
+            let firstKid = true;
+            spouseIds.forEach(sid => {
+                (groups[sid] || []).forEach(cid => {
+                    if (!firstKid) allKidsW += H_GAP;
+                    allKidsW += subtreeW(cid);
+                    firstKid = false;
+                });
+            });
+            total = Math.max(coupleChainW, allKidsW);
+        } else {
+            total = famWidths.reduce((a, b) => a + b, 0);
+        }
+        widthCache[pid] = total;
+        return total;
+    }
+    subtreeW(rootId);
+
+    // 5. Assign positions top-down
+    const positions = {};
+    const placed = new Set();
+
+    function placeSubtree(pid, left, top) {
+        if (placed.has(pid)) return;
+        const p = peopleMap[pid];
+        const totalW = widthCache[pid] || NODE_W;
+        const centerX = left + totalW / 2;
+        const groups = childrenBySpouse(pid);
+        const spouseIds = (p.spouses || []).filter(s => peopleMap[s]);
+
+        if (spouseIds.length === 0) {
+            // Single person (no spouse)
+            positions[pid] = { x: centerX, y: top + NODE_H / 2 };
+            placed.add(pid);
+            const singleKids = groups['__none__'] || [];
+            if (singleKids.length > 0) {
+                const kidsW = singleKids.reduce((s, c) => s + subtreeW(c), 0) + (singleKids.length - 1) * H_GAP;
+                let cx = centerX - kidsW / 2;
+                singleKids.forEach(cid => {
+                    placeSubtree(cid, cx, top + NODE_H + V_GAP);
+                    cx += subtreeW(cid) + H_GAP;
                 });
             }
-
-            // Link Family Node -> Child
-            g.setEdge(familyId, child.id, { style: "stroke: #333; stroke-width: 2px;", arrow: true });
+            return;
         }
-    });
 
-    // Fallback for spouses without children (so they are close together)
-    Object.values(peopleMap).forEach(p => {
-        if (p.spouses) {
-            p.spouses.forEach(spouseId => {
-                const parents = [p.id, spouseId].sort();
-                const familyId = "fam_" + parents.join("_");
-                if (!processedFamilies.has(familyId)) {
-                    // Create empty family for childless couples
-                    g.setNode(familyId, { label: "", width: 10, height: 10, type: 'family' });
-                    processedFamilies.add(familyId);
-                    g.setEdge(p.id, familyId, { style: "stroke: #333; stroke-width: 2px;" });
-                    g.setEdge(spouseId, familyId, { style: "stroke: #333; stroke-width: 2px;" });
-                }
-            })
+        if (spouseIds.length === 1) {
+            // Single spouse
+            const sid = spouseIds[0];
+            const sp = peopleMap[sid];
+            // Male on left, female on right
+            let leftId = pid, rightId = sid;
+            if (p.sex === 'female' && sp.sex === 'male') { leftId = sid; rightId = pid; }
+            else if (p.sex === 'male') { leftId = pid; rightId = sid; }
+            else if (sp.sex === 'male') { leftId = sid; rightId = pid; }
+
+            if (!placed.has(leftId)) {
+                positions[leftId] = { x: centerX - SPOUSE_GAP / 2 - NODE_W / 2, y: top + NODE_H / 2 };
+                placed.add(leftId);
+            }
+            if (!placed.has(rightId)) {
+                positions[rightId] = { x: centerX + SPOUSE_GAP / 2 + NODE_W / 2, y: top + NODE_H / 2 };
+                placed.add(rightId);
+            }
+
+            const kids = groups[sid] || [];
+            if (kids.length > 0) {
+                const kidsW = kids.reduce((s, c) => s + subtreeW(c), 0) + (kids.length - 1) * H_GAP;
+                let cx = centerX - kidsW / 2;
+                kids.forEach(cid => {
+                    placeSubtree(cid, cx, top + NODE_H + V_GAP);
+                    cx += subtreeW(cid) + H_GAP;
+                });
+            }
+            return;
         }
+
+        // Multiple spouses: place couple chain centered, all children as one group below
+        const numInChain = spouseIds.length + 1; // spouses + the person
+        const coupleChainW = numInChain * NODE_W + (numInChain - 1) * SPOUSE_GAP;
+        const chainStartX = centerX - coupleChainW / 2;
+
+        // Chain order: [first spouse, person, second spouse, ...]
+        const chain = [spouseIds[0], pid, ...spouseIds.slice(1)];
+        chain.forEach((id, idx) => {
+            if (!placed.has(id)) {
+                positions[id] = {
+                    x: chainStartX + idx * (NODE_W + SPOUSE_GAP) + NODE_W / 2,
+                    y: top + NODE_H / 2
+                };
+                placed.add(id);
+            }
+        });
+
+        // Collect ALL children across all spouses in order
+        const allKids = [];
+        spouseIds.forEach(sid => {
+            (groups[sid] || []).forEach(cid => allKids.push(cid));
+        });
+
+        if (allKids.length > 0) {
+            const allKidsW = allKids.reduce((s, c) => s + subtreeW(c), 0) + (allKids.length - 1) * H_GAP;
+            let cx = centerX - allKidsW / 2;
+            allKids.forEach(cid => {
+                placeSubtree(cid, cx, top + NODE_H + V_GAP);
+                cx += subtreeW(cid) + H_GAP;
+            });
+        }
+    }
+
+    placeSubtree(rootId, 0, 0);
+
+    // Shift all positions so minimum x has a margin
+    let minX = Infinity, maxX = -Infinity, maxY = 0;
+    Object.values(positions).forEach(pos => {
+        minX = Math.min(minX, pos.x - NODE_W / 2);
+        maxX = Math.max(maxX, pos.x + NODE_W / 2);
+        maxY = Math.max(maxY, pos.y + NODE_H / 2);
     });
+    const margin = 30;
+    if (minX < margin) {
+        const shift = margin - minX;
+        Object.values(positions).forEach(pos => { pos.x += shift; });
+        maxX += margin - minX;
+    }
+    const treeW = maxX + margin;
+    const treeH = maxY + margin;
 
-
-    dagre.layout(g);
+    // === RENDERING with D3 ===
 
     const svg = d3.select("#tree-container").append("svg")
         .attr("width", width)
@@ -332,89 +493,124 @@ function renderClassicTree(peopleMap) {
 
     const inner = svg.append("g");
 
-    // Initial transform to center roughly - improve later
-    const initialScale = 0.75;
-    inner.call(d3.zoom().transform, d3.zoomIdentity.translate((width - g.graph().width * initialScale) / 2, 20).scale(initialScale));
+    // Center and scale the tree to fit
+    const scaleX = width / treeW;
+    const scaleY = height / treeH;
+    const initialScale = Math.min(scaleX, scaleY, 1) * 0.9;
+    const tx = (width - treeW * initialScale) / 2;
+    const ty = 20;
+    svg.call(d3.zoom().transform, d3.zoomIdentity.translate(tx, ty).scale(initialScale));
+    inner.attr("transform", d3.zoomIdentity.translate(tx, ty).scale(initialScale));
 
+    // --- Draw family connection lines ---
+    // Build family units from the data for line drawing
+    const drawnFamilies = new Set();
+    Object.values(peopleMap).forEach(person => {
+        if (!person.spouses) return;
+        person.spouses.forEach(sid => {
+            const famKey = [person.id, sid].sort().join('+');
+            if (drawnFamilies.has(famKey)) return;
+            drawnFamilies.add(famKey);
 
-    // Draw edges
-    g.edges().forEach(e => {
-        const edge = g.edge(e);
-        const points = edge.points;
-        const line = d3.line()
-            .x(d => d.x)
-            .y(d => d.y)
-            .curve(d3.curveBasis);
-        // Using curveBasis for smoother lines, or custom implementation for orthogonal
+            const posA = positions[person.id];
+            const posB = positions[sid];
+            if (!posA || !posB) return;
 
-        inner.append("path")
-            .attr("d", line(points))
-            .attr("stroke", "#333")
-            .attr("stroke-width", 2)
-            .attr("fill", "none");
-    });
-
-    // Draw nodes
-    g.nodes().forEach(v => {
-        const node = g.node(v);
-
-        if (node.type === 'family') {
-            inner.append("circle")
-                .attr("cx", node.x)
-                .attr("cy", node.y)
-                .attr("r", 4)
-                .attr("fill", "#333");
-            return;
-        }
-
-        const group = inner.append("g")
-            .attr("transform", `translate(${node.x - node.width / 2}, ${node.y - node.height / 2})`)
-            .style("cursor", "pointer")
-            .on("click", () => {
-                window.location.href = `/person/${node.id}`;
+            // Find children of this couple
+            const kids = [];
+            Object.values(peopleMap).forEach(child => {
+                if (child.parents && child.parents.includes(person.id) && child.parents.includes(sid)) {
+                    if (positions[child.id]) kids.push(child.id);
+                }
             });
 
+            const leftPos = posA.x < posB.x ? posA : posB;
+            const rightPos = posA.x < posB.x ? posB : posA;
+            const spouseY = (leftPos.y + rightPos.y) / 2; // center height
+            const junctionX = (posA.x + posB.x) / 2;
+
+            // Spouse line: right edge of left box → left edge of right box, at center height
+            inner.append("line")
+                .attr("x1", leftPos.x + NODE_W / 2).attr("y1", spouseY)
+                .attr("x2", rightPos.x - NODE_W / 2).attr("y2", spouseY)
+                .attr("stroke", "#888").attr("stroke-width", 1.5);
+
+            // Children connections
+            if (kids.length > 0) {
+                const sorted = kids.map(k => positions[k]).sort((a, b) => a.x - b.x);
+                const childTopY = Math.min(...sorted.map(c => c.y - NODE_H / 2));
+                const barY = (spouseY + childTopY) / 2;
+
+                // Vertical from junction to bar
+                inner.append("line")
+                    .attr("x1", junctionX).attr("y1", spouseY)
+                    .attr("x2", junctionX).attr("y2", barY)
+                    .attr("stroke", "#888").attr("stroke-width", 1.5);
+
+                // Horizontal bar
+                const barL = Math.min(sorted[0].x, junctionX);
+                const barR = Math.max(sorted[sorted.length - 1].x, junctionX);
+                if (barL !== barR) {
+                    inner.append("line")
+                        .attr("x1", barL).attr("y1", barY)
+                        .attr("x2", barR).attr("y2", barY)
+                        .attr("stroke", "#888").attr("stroke-width", 1.5);
+                }
+
+                // Vertical drops to each child
+                sorted.forEach(cpos => {
+                    inner.append("line")
+                        .attr("x1", cpos.x).attr("y1", barY)
+                        .attr("x2", cpos.x).attr("y2", cpos.y - NODE_H / 2)
+                        .attr("stroke", "#888").attr("stroke-width", 1.5);
+                });
+            }
+        });
+    });
+
+    // --- Draw person nodes ---
+    Object.entries(positions).forEach(([pid, pos]) => {
+        const p = peopleMap[pid];
+        if (!p) return;
+
+        const group = inner.append("g")
+            .attr("transform", `translate(${pos.x - NODE_W / 2}, ${pos.y - NODE_H / 2})`)
+            .style("cursor", "pointer")
+            .on("click", () => { window.location.href = `/person/${pid}`; });
+
         group.append("rect")
-            .attr("width", node.width)
-            .attr("height", node.height)
-            .attr("rx", 5)
-            .attr("ry", 5)
-            .attr("fill", getGenderColor(node.sex))
-            .attr("stroke", getStrokeColor(node.sex))
-            .attr("stroke", getStrokeColor(node.sex))
+            .attr("width", NODE_W)
+            .attr("height", NODE_H)
+            .attr("rx", 5).attr("ry", 5)
+            .attr("fill", getGenderColor(p.sex))
+            .attr("stroke", getStrokeColor(p.sex))
             .attr("stroke-width", 2);
 
-        // Photo (Classic View)
-        if (node.photo) {
+        if (p.photo) {
             group.append("image")
-                .attr("xlink:href", node.photo)
-                .attr("x", 5)
-                .attr("y", 5)
-                .attr("width", 50)
-                .attr("height", 50)
+                .attr("xlink:href", p.photo)
+                .attr("x", 5).attr("y", 5)
+                .attr("width", 50).attr("height", 50)
                 .attr("preserveAspectRatio", "xMidYMid slice");
         }
 
-        // Text Positioning
-        const textX = node.photo ? 65 : node.width / 2;
-        const textAnchor = node.photo ? "start" : "middle";
+        const textX = p.photo ? 65 : NODE_W / 2;
+        const textAnchor = p.photo ? "start" : "middle";
 
-        // Name + Symbol
         group.append("text")
             .attr("x", textX)
-            .attr("y", node.height / 2 - 5) // Shift up
+            .attr("y", NODE_H / 2 - 5)
             .attr("text-anchor", textAnchor)
-            .text(node.label + " " + getGenderSymbol(node.sex))
+            .text(p.name + " " + getGenderSymbol(p.sex))
             .attr("fill", "#333")
             .style("font-size", "14px")
             .style("font-weight", "bold");
 
-        // Dates
         group.append("text")
             .attr("x", textX)
-            .attr("y", node.height / 2 + 15) // Shift down
+            .attr("y", NODE_H / 2 + 15)
             .attr("text-anchor", textAnchor)
-            .text(node.lifeSpan)
+            .text(getLifeSpan(p))
             .attr("fill", "#555")
             .style("font-size", "11px");
     });

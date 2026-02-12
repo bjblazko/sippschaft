@@ -6,7 +6,7 @@
 
 Two visualization modes on the main page:
 
-- **Classic View** -- Hierarchical tree layout using Dagre for automatic graph positioning. Family "union" nodes connect parents to children. Spouse pairs without children are also linked. Nodes show name, gender symbol, birth/death years, and optional photo.
+- **Classic View** -- Hierarchical tree layout using a custom genealogy-aware algorithm. Parents are placed above their children, spouses are adjacent, and multi-spouse families use a couple-chain layout. Nodes show name, gender symbol, birth/death years, and optional photo.
 - **Force View** -- Physics-based D3 force simulation. Nodes can be dragged freely. Parent-child links are solid lines; spouse links are dashed red lines.
 
 Both views support zoom and pan via mouse/trackpad.
