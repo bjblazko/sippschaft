@@ -4,6 +4,7 @@ A family tree web app that visualizes genealogy data as an interactive tree. Fam
 
 ## Documentation
 
+- [Changelog](CHANGELOG.md)
 - [Features & Roadmap](doc/features.md)
 - [Architecture (arc42)](doc/architecture.md)
 - [Vision & Principles](doc/vision.md)
