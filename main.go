@@ -3,12 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"sippschaft/model"
 	"sippschaft/parser"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
@@ -20,6 +22,7 @@ import (
 var reLeadingH1 = regexp.MustCompile(`(?s)^\s*<h1>.*?</h1>\s*`)
 
 var (
+	dataDir   string
 	people    map[string]*model.Person
 	peopleMux sync.RWMutex
 	templates *template.Template
@@ -27,11 +30,22 @@ var (
 
 func main() {
 	var err error
+
+	// Parse --data flag, fall back to DATA env var, default to "data"
+	flag.StringVar(&dataDir, "data", "", "path to the data directory (default: ./data)")
+	flag.Parse()
+	if dataDir == "" {
+		dataDir = os.Getenv("DATA")
+	}
+	if dataDir == "" {
+		dataDir = "data"
+	}
+
 	// Load data initially
 	reload()
 
 	// Watch data directory for changes and reload automatically
-	go watchData("data", 2*time.Second)
+	go watchData(dataDir, 2*time.Second)
 
 	// Parse templates
 	templates, err = template.ParseGlob("templates/*.html")
@@ -45,7 +59,7 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// Person data assets (photos, documents)
-	mux.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("data"))))
+	mux.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir(dataDir))))
 
 	// API
 	mux.HandleFunc("/api/tree", handleTreeAPI)
@@ -54,6 +68,7 @@ func main() {
 	mux.HandleFunc("/", handleIndex)
 	mux.HandleFunc("/person/", handlePerson)
 
+	log.Printf("Data directory: %s", dataDir)
 	log.Println("Server starting on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalf("Server failed: %v", err)
@@ -100,7 +115,7 @@ func reload() {
 	peopleMux.Lock()
 	defer peopleMux.Unlock()
 
-	p, err := parser.LoadPeople("data")
+	p, err := parser.LoadPeople(dataDir)
 	if err != nil {
 		log.Printf("Error loading people: %v", err)
 		return

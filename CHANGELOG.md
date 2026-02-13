@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-13
+
 ### Added
 
 - Theme system with eight variants: Classic, Modern, Neon, and Home Computer -- each with Light/Dark mode (ADR-008)
@@ -16,7 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Home Computer theme (1980s home computer aesthetic): light mode inspired by Amiga Workbench (blue/orange/gray with rainbow stripes), dark mode inspired by C64 (purple/blue with light blue text); both with beveled 3D buttons, hard pixel shadows, and zero border-radius
 - Drop shadows on SVG tree nodes (classic view rectangles, force view circles) via SVG `feDropShadow` filter
 - Drop shadow on header bar and profile cards via CSS `box-shadow` custom properties
+- Configurable data directory via `--data` flag or `DATA` environment variable (defaults to `./data`)
 - Automatic data directory polling every 2 seconds for hot reload without restart
+- Screenshots in README (tree view, node view, person profile)
 - 16 additional avatar photos for family members
 - Name history support: `names` list in YAML for tracking birth names, married names, and other name changes over time with optional type and date
 - Nickname support: `nicknames` list in YAML, displayed separately on the profile page
@@ -29,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Multi-spouse families (e.g. Robert Smith with Linda Johnson and Susan Davis) use a couple-chain layout with all children placed as one group below, preventing visual overlaps
 - Renamed Go module from `genealogy-app` to `sippschaft`
 - Renamed UI title and heading from "Family Tree App" to "Sippschaft"
+- Renamed view buttons from "Force View" / "Classic View" to "Node View" / "Tree View"
 - SVG tree colors (gender fills, strokes, line colors, text) now read from CSS custom properties for theme support
 - Person profile pages strip the leading `<h1>` from rendered markdown to avoid duplicating the name shown from YAML metadata
 

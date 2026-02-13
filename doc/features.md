@@ -76,7 +76,8 @@ Items below are gaps or natural next steps identified from the current codebase.
 
 ### Infrastructure
 
-- [x] **Hot reload without restart** -- The server polls the `data/` directory every 2 seconds and automatically reloads when files change.
+- [x] **Configurable data directory** -- Use `--data` flag or `DATA` environment variable to point to a different data folder. Defaults to `./data`.
+- [x] **Hot reload without restart** -- The server polls the data directory every 2 seconds and automatically reloads when files change.
 - [ ] **Configurable port** -- Port 8080 is hardcoded.
 - [ ] **Static site generation** -- Export the tree as a static HTML site for hosting without a server.
 - [ ] **Tests** -- No test files exist in the project.
