@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"genealogy-app/model"
+	"sippschaft/model"
 	"os"
 	"path/filepath"
 

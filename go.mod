@@ -1,4 +1,4 @@
-module genealogy-app
+module sippschaft
 
 go 1.25.5
 

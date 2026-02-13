@@ -61,7 +61,7 @@ Items below are gaps or natural next steps identified from the current codebase.
 
 ### Infrastructure
 
-- [ ] **Hot reload without restart** -- Data is loaded once at startup. Changes to `.md` files require restarting the server (or using `air`).
+- [x] **Hot reload without restart** -- The server polls the `data/` directory every 2 seconds and automatically reloads when files change.
 - [ ] **Configurable port** -- Port 8080 is hardcoded.
 - [ ] **Static site generation** -- Export the tree as a static HTML site for hosting without a server.
 - [ ] **Tests** -- No test files exist in the project.

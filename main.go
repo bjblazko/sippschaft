@@ -3,12 +3,15 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"genealogy-app/model"
-	"genealogy-app/parser"
+	"sippschaft/model"
+	"sippschaft/parser"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
+	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/yuin/goldmark"
 )
@@ -23,6 +26,9 @@ func main() {
 	var err error
 	// Load data initially
 	reload()
+
+	// Watch data directory for changes and reload automatically
+	go watchData("data", 2*time.Second)
 
 	// Parse templates
 	templates, err = template.ParseGlob("templates/*.html")
@@ -49,6 +55,42 @@ func main() {
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
+}
+
+// watchData polls the data directory for file changes and triggers a reload.
+func watchData(dir string, interval time.Duration) {
+	var lastFingerprint string
+	for {
+		time.Sleep(interval)
+		fp := dataFingerprint(dir)
+		if fp != lastFingerprint {
+			if lastFingerprint != "" {
+				log.Println("Data directory changed, reloading...")
+				reload()
+			}
+			lastFingerprint = fp
+		}
+	}
+}
+
+// dataFingerprint walks the data directory and builds a string from all file paths
+// and their modification times. Any change to this string means something changed.
+func dataFingerprint(dir string) string {
+	var buf bytes.Buffer
+	filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+		info, err := d.Info()
+		if err != nil {
+			return nil
+		}
+		buf.WriteString(path)
+		buf.WriteString(info.ModTime().String())
+		buf.WriteString("|")
+		return nil
+	})
+	return buf.String()
 }
 
 func reload() {
