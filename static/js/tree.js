@@ -128,15 +128,6 @@ function addDropShadowFilter(svg) {
         const merge = filter.append("feMerge");
         merge.append("feMergeNode").attr("in", "glow");
         merge.append("feMergeNode").attr("in", "SourceGraphic");
-
-        // Animated glow filter for lines
-        const lineFilter = defs.append("filter").attr("id", "neon-line-glow")
-            .attr("x", "-50%").attr("y", "-50%").attr("width", "200%").attr("height", "200%");
-        lineFilter.append("feGaussianBlur")
-            .attr("in", "SourceGraphic").attr("stdDeviation", 2).attr("result", "blur");
-        const lineMerge = lineFilter.append("feMerge");
-        lineMerge.append("feMergeNode").attr("in", "blur");
-        lineMerge.append("feMergeNode").attr("in", "SourceGraphic");
     } else {
         // Standard drop shadow
         const filter = defs.append("filter").attr("id", "drop-shadow")
@@ -217,15 +208,13 @@ function renderForceTree(peopleMap) {
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collide", d3.forceCollide(40)); // Increased radius
 
-    const neon = isNeonTheme();
     const link = g.append("g")
         .selectAll("line")
         .data(links)
         .enter().append("line")
         .attr("stroke", d => d.type === "spouse" ? cssVar('--female-stroke') : cssVar('--line-color'))
-        .attr("stroke-width", neon ? 1.5 : 2)
-        .attr("stroke-dasharray", d => d.type === "spouse" ? "5,5" : "none")
-        .attr("filter", neon ? "url(#neon-line-glow)" : null);
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", d => d.type === "spouse" ? "5,5" : "none");
 
     const node = g.append("g")
         .selectAll("g")
@@ -544,8 +533,6 @@ function renderClassicTree(peopleMap) {
         }));
 
     addDropShadowFilter(svg);
-    const neonClassic = isNeonTheme();
-    const lineFilter = neonClassic ? "url(#neon-line-glow)" : null;
 
     const inner = svg.append("g");
 
@@ -665,10 +652,6 @@ function renderClassicTree(peopleMap) {
         });
     });
 
-    // Apply neon glow filter to all connection lines
-    if (neonClassic) {
-        inner.selectAll("line").attr("filter", "url(#neon-line-glow)");
-    }
 
     // --- Draw person nodes ---
     Object.entries(positions).forEach(([pid, pos]) => {

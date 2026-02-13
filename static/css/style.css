@@ -219,7 +219,7 @@
     --btn-active-text: #00fff7;
     --btn-active-border: #00fff7;
 
-    --line-color: rgba(0,255,247,0.4);
+    --line-color: #00fff7;
     --node-text: #e0f0ff;
     --node-subtext: #70b8d0;
     --male-fill: #081828;
@@ -267,7 +267,7 @@
     --btn-active-text: #ff00aa;
     --btn-active-border: #ff00aa;
 
-    --line-color: rgba(255,0,170,0.35);
+    --line-color: #ff00aa;
     --node-text: #d0e0f8;
     --node-subtext: #7088aa;
     --male-fill: #060a18;
