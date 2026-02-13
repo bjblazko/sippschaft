@@ -1,14 +1,203 @@
+/* ==========================================================
+   Theme: Classic Light (default)
+   ========================================================== */
 :root {
     --bg-color: #f4f6f8;
     --card-bg: #ffffff;
     --text-color: #333;
     --accent-color: #2c3e50;
     --link-color: #3498db;
+    --header-bg: #2c3e50;
+    --header-text: #ffffff;
+    --border-color: #eee;
+    --meta-bg: #f8f9fa;
+    --shadow-color: rgba(0,0,0,0.1);
     --border-radius: 8px;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    /* Controls (tree page) */
+    --controls-bg: #ffffff;
+    --controls-shadow: rgba(0,0,0,0.2);
+    --btn-bg: #f0f0f0;
+    --btn-text: #333;
+    --btn-border: #ccc;
+    --btn-active-bg: #3498db;
+    --btn-active-text: #ffffff;
+    --btn-active-border: #2980b9;
+
+    /* SVG tree colors */
+    --line-color: #888;
+    --node-text: #333;
+    --node-subtext: #555;
+    --male-fill: #AED6F1;
+    --male-stroke: #3498db;
+    --female-fill: #F5B7B1;
+    --female-stroke: #e74c3c;
+    --diverse-fill: #D7BDE2;
+    --diverse-stroke: #9b59b6;
+    --unknown-fill: #E0E0E0;
+    --unknown-stroke: #7f8c8d;
+
+    /* Select inputs */
+    --select-bg: rgba(255,255,255,0.15);
+    --select-text: #ffffff;
+    --select-border: rgba(255,255,255,0.3);
+
+    /* Photo border */
+    --photo-border: #ffffff;
+
+    /* Shadows */
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    --header-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* ==========================================================
+   Theme: Classic Dark
+   ========================================================== */
+[data-theme-style="classic"][data-theme-mode="dark"] {
+    --bg-color: #1a1a2e;
+    --card-bg: #16213e;
+    --text-color: #e0e0e0;
+    --accent-color: #e0c097;
+    --link-color: #64b5f6;
+    --header-bg: #0f3460;
+    --header-text: #e0e0e0;
+    --border-color: #2a2a4a;
+    --meta-bg: #1a1a3e;
+    --shadow-color: rgba(0,0,0,0.4);
+
+    --controls-bg: #16213e;
+    --controls-shadow: rgba(0,0,0,0.5);
+    --btn-bg: #1a1a3e;
+    --btn-text: #e0e0e0;
+    --btn-border: #2a2a4a;
+    --btn-active-bg: #1a6fb5;
+    --btn-active-text: #ffffff;
+    --btn-active-border: #1565a0;
+
+    --line-color: #5a6a7a;
+    --node-text: #e0e0e0;
+    --node-subtext: #b0b0b0;
+    --male-fill: #1a4a6e;
+    --male-stroke: #4aa3df;
+    --female-fill: #6e2a2a;
+    --female-stroke: #e07070;
+    --diverse-fill: #4a2a6e;
+    --diverse-stroke: #b070d0;
+    --unknown-fill: #3a3a3a;
+    --unknown-stroke: #8a8a8a;
+
+    --select-bg: rgba(255,255,255,0.1);
+    --select-text: #e0e0e0;
+    --select-border: rgba(255,255,255,0.2);
+
+    --photo-border: #2a2a4a;
+
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    --header-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* ==========================================================
+   Theme: Modern Light
+   ========================================================== */
+[data-theme-style="modern"][data-theme-mode="light"] {
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-color: #1a1a1a;
+    --accent-color: #6366f1;
+    --link-color: #6366f1;
+    --header-bg: #374151;
+    --header-text: #f9fafb;
+    --border-color: #e5e7eb;
+    --meta-bg: #f1f5f9;
+    --shadow-color: rgba(0,0,0,0.06);
+    --border-radius: 12px;
+    --font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --controls-bg: #ffffff;
+    --controls-shadow: rgba(0,0,0,0.1);
+    --btn-bg: #f1f5f9;
+    --btn-text: #374151;
+    --btn-border: #e5e7eb;
+    --btn-active-bg: #6366f1;
+    --btn-active-text: #ffffff;
+    --btn-active-border: #4f46e5;
+
+    --line-color: #94a3b8;
+    --node-text: #1e293b;
+    --node-subtext: #64748b;
+    --male-fill: #dbeafe;
+    --male-stroke: #3b82f6;
+    --female-fill: #fce7f3;
+    --female-stroke: #ec4899;
+    --diverse-fill: #ede9fe;
+    --diverse-stroke: #8b5cf6;
+    --unknown-fill: #f1f5f9;
+    --unknown-stroke: #94a3b8;
+
+    --select-bg: rgba(255,255,255,0.12);
+    --select-text: #f9fafb;
+    --select-border: rgba(255,255,255,0.25);
+
+    --photo-border: #ffffff;
+
+    --card-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    --header-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* ==========================================================
+   Theme: Modern Dark
+   ========================================================== */
+[data-theme-style="modern"][data-theme-mode="dark"] {
+    --bg-color: #0f0f14;
+    --card-bg: #1c1c27;
+    --text-color: #e4e4e7;
+    --accent-color: #818cf8;
+    --link-color: #818cf8;
+    --header-bg: #1e1e2e;
+    --header-text: #e4e4e7;
+    --border-color: #2e2e3e;
+    --meta-bg: #1c1c2c;
+    --shadow-color: rgba(0,0,0,0.5);
+    --border-radius: 12px;
+    --font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --controls-bg: #1c1c27;
+    --controls-shadow: rgba(0,0,0,0.5);
+    --btn-bg: #2a2a3a;
+    --btn-text: #e4e4e7;
+    --btn-border: #3a3a4a;
+    --btn-active-bg: #6366f1;
+    --btn-active-text: #ffffff;
+    --btn-active-border: #4f46e5;
+
+    --line-color: #4a4a6a;
+    --node-text: #e4e4e7;
+    --node-subtext: #a0a0b0;
+    --male-fill: #1e2a4a;
+    --male-stroke: #60a5fa;
+    --female-fill: #4a1a2e;
+    --female-stroke: #f472b6;
+    --diverse-fill: #2e1a4a;
+    --diverse-stroke: #a78bfa;
+    --unknown-fill: #2a2a3a;
+    --unknown-stroke: #6a6a8a;
+
+    --select-bg: rgba(255,255,255,0.08);
+    --select-text: #e4e4e7;
+    --select-border: rgba(255,255,255,0.15);
+
+    --photo-border: #2e2e3e;
+
+    --card-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+    --header-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* ==========================================================
+   Base layout
+   ========================================================== */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -20,10 +209,15 @@ body {
 }
 
 header {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    padding: 0.75rem 2rem;
+    box-shadow: var(--header-shadow);
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 header h1 {
@@ -31,8 +225,12 @@ header h1 {
     font-size: 1.5rem;
 }
 
+header nav {
+    flex: 1;
+}
+
 header nav a {
-    color: white;
+    color: var(--header-text);
     text-decoration: none;
     font-weight: bold;
 }
@@ -56,6 +254,60 @@ main:has(#tree-container) {
     overflow: hidden;
 }
 
+/* ==========================================================
+   Theme selector (in header)
+   ========================================================== */
+.theme-selector {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.theme-selector select {
+    background: var(--select-bg);
+    color: var(--select-text);
+    border: 1px solid var(--select-border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.theme-selector select option {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* ==========================================================
+   Tree view controls
+   ========================================================== */
+#controls {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
+}
+
+#controls button {
+    padding: 4px 10px;
+    cursor: pointer;
+    background: var(--select-bg);
+    color: var(--select-text);
+    border: 1px solid var(--select-border);
+    border-radius: 4px;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+}
+
+#controls button.active {
+    background-color: var(--btn-active-bg);
+    color: var(--btn-active-text);
+    border: 1px solid var(--btn-active-border);
+}
+
+/* ==========================================================
+   Person profile page
+   ========================================================== */
 .profile-container {
     max-width: 800px;
 }
@@ -64,13 +316,13 @@ main:has(#tree-container) {
     background: var(--card-bg);
     padding: 2rem;
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: var(--card-shadow);
 }
 
 .profile-card h1 {
     margin-top: 0;
     color: var(--accent-color);
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5rem;
 }
 
@@ -78,14 +330,14 @@ main:has(#tree-container) {
     display: flex;
     gap: 2rem;
     margin-bottom: 2rem;
-    background: #f8f9fa;
+    background: var(--meta-bg);
     padding: 1rem;
     border-radius: 4px;
 }
 
 .meta-item .label {
     font-weight: bold;
-    color: #666;
+    color: var(--node-subtext);
     margin-right: 0.5rem;
 }
 
@@ -94,7 +346,7 @@ main:has(#tree-container) {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-top: 2rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
 
@@ -129,7 +381,7 @@ main:has(#tree-container) {
 
 .profile-photo img {
     max-width: 250px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border: 4px solid #fff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    border: 4px solid var(--photo-border);
 }

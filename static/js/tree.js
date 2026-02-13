@@ -46,6 +46,11 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener('resize', () => {
         if (currentData) renderTree();
     });
+
+    // Re-render when theme changes
+    document.addEventListener('themechange', () => {
+        if (currentData) renderTree();
+    });
 });
 
 function switchView(view) {
@@ -100,20 +105,24 @@ function getGenderSymbol(sex) {
     return '?';
 }
 
+function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
 function getGenderColor(sex) {
     const s = sex ? sex.toLowerCase() : '';
-    if (s === 'male') return '#AED6F1'; // Light Blue
-    if (s === 'female') return '#F5B7B1'; // Light Pink
-    if (s === 'diverse') return '#D7BDE2'; // Light Purple
-    return '#E0E0E0'; // Gray
+    if (s === 'male') return cssVar('--male-fill');
+    if (s === 'female') return cssVar('--female-fill');
+    if (s === 'diverse') return cssVar('--diverse-fill');
+    return cssVar('--unknown-fill');
 }
 
 function getStrokeColor(sex) {
     const s = sex ? sex.toLowerCase() : '';
-    if (s === 'male') return '#3498db';
-    if (s === 'female') return '#e74c3c';
-    if (s === 'diverse') return '#9b59b6';
-    return '#7f8c8d';
+    if (s === 'male') return cssVar('--male-stroke');
+    if (s === 'female') return cssVar('--female-stroke');
+    if (s === 'diverse') return cssVar('--diverse-stroke');
+    return cssVar('--unknown-stroke');
 }
 
 
@@ -159,6 +168,14 @@ function renderForceTree(peopleMap) {
         }))
         .append("g");
 
+    // Drop shadow filter
+    const defs = svg.append("defs");
+    const filter = defs.append("filter").attr("id", "drop-shadow")
+        .attr("x", "-20%").attr("y", "-20%").attr("width", "140%").attr("height", "140%");
+    filter.append("feDropShadow")
+        .attr("dx", 0).attr("dy", 2).attr("stdDeviation", 3)
+        .attr("flood-color", "rgba(0,0,0,0.2)");
+
     const g = svg.append("g");
 
     const simulation = d3.forceSimulation(nodes)
@@ -171,7 +188,7 @@ function renderForceTree(peopleMap) {
         .selectAll("line")
         .data(links)
         .enter().append("line")
-        .attr("stroke", d => d.type === "spouse" ? "#e74c3c" : "#999")
+        .attr("stroke", d => d.type === "spouse" ? cssVar('--female-stroke') : cssVar('--line-color'))
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", d => d.type === "spouse" ? "5,5" : "none");
 
@@ -199,8 +216,8 @@ function renderForceTree(peopleMap) {
         .attr("r", 25) // Slightly larger
         .attr("fill", d => getGenderColor(d.sex))
         .attr("stroke", d => getStrokeColor(d.sex))
-        .attr("stroke", d => getStrokeColor(d.sex))
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 2)
+        .attr("filter", "url(#drop-shadow)");
 
     // Photo (Force View)
     node.each(function (d) {
@@ -227,7 +244,7 @@ function renderForceTree(peopleMap) {
         .text(d => d.name + " " + getGenderSymbol(d.sex))
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .attr("fill", "#333");
+        .attr("fill", cssVar('--node-text'));
 
     // Dates
     node.append("text")
@@ -235,7 +252,7 @@ function renderForceTree(peopleMap) {
         .attr("y", 10)
         .text(d => d.lifeSpan)
         .style("font-size", "10px")
-        .attr("fill", "#666");
+        .attr("fill", cssVar('--node-subtext'));
 
     node.on("click", (event, d) => {
         window.location.href = `/person/${d.id}`;
@@ -491,6 +508,14 @@ function renderClassicTree(peopleMap) {
             inner.attr("transform", event.transform);
         }));
 
+    // Drop shadow filter
+    const defs = svg.append("defs");
+    const filter = defs.append("filter").attr("id", "drop-shadow")
+        .attr("x", "-20%").attr("y", "-20%").attr("width", "140%").attr("height", "140%");
+    filter.append("feDropShadow")
+        .attr("dx", 0).attr("dy", 2).attr("stdDeviation", 3)
+        .attr("flood-color", "rgba(0,0,0,0.2)");
+
     const inner = svg.append("g");
 
     // Center and scale the tree to fit
@@ -533,7 +558,7 @@ function renderClassicTree(peopleMap) {
             inner.append("line")
                 .attr("x1", leftPos.x + NODE_W / 2).attr("y1", spouseY)
                 .attr("x2", rightPos.x - NODE_W / 2).attr("y2", spouseY)
-                .attr("stroke", "#888").attr("stroke-width", 1.5);
+                .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
 
             // Children connections
             if (kids.length > 0) {
@@ -545,7 +570,7 @@ function renderClassicTree(peopleMap) {
                 inner.append("line")
                     .attr("x1", junctionX).attr("y1", spouseY)
                     .attr("x2", junctionX).attr("y2", barY)
-                    .attr("stroke", "#888").attr("stroke-width", 1.5);
+                    .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
 
                 // Horizontal bar
                 const barL = Math.min(sorted[0].x, junctionX);
@@ -554,7 +579,7 @@ function renderClassicTree(peopleMap) {
                     inner.append("line")
                         .attr("x1", barL).attr("y1", barY)
                         .attr("x2", barR).attr("y2", barY)
-                        .attr("stroke", "#888").attr("stroke-width", 1.5);
+                        .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
                 }
 
                 // Vertical drops to each child
@@ -562,7 +587,7 @@ function renderClassicTree(peopleMap) {
                     inner.append("line")
                         .attr("x1", cpos.x).attr("y1", barY)
                         .attr("x2", cpos.x).attr("y2", cpos.y - NODE_H / 2)
-                        .attr("stroke", "#888").attr("stroke-width", 1.5);
+                        .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
                 });
             }
         });
@@ -584,7 +609,8 @@ function renderClassicTree(peopleMap) {
             .attr("rx", 5).attr("ry", 5)
             .attr("fill", getGenderColor(p.sex))
             .attr("stroke", getStrokeColor(p.sex))
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .attr("filter", "url(#drop-shadow)");
 
         if (p.photo) {
             group.append("image")
@@ -602,7 +628,7 @@ function renderClassicTree(peopleMap) {
             .attr("y", NODE_H / 2 - 5)
             .attr("text-anchor", textAnchor)
             .text(p.name + " " + getGenderSymbol(p.sex))
-            .attr("fill", "#333")
+            .attr("fill", cssVar('--node-text'))
             .style("font-size", "14px")
             .style("font-weight", "bold");
 
@@ -611,7 +637,7 @@ function renderClassicTree(peopleMap) {
             .attr("y", NODE_H / 2 + 15)
             .attr("text-anchor", textAnchor)
             .text(getLifeSpan(p))
-            .attr("fill", "#555")
+            .attr("fill", cssVar('--node-subtext'))
             .style("font-size", "11px");
     });
 }

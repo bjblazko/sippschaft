@@ -30,6 +30,15 @@ Each person is a folder in `data/` named `{birth-date}_{surname}_{firstname}`:
 - The folder name is the canonical ID. Relationships reference other folder names.
 - Additional images and documents can be placed in the folder for use in the biography.
 
+### Themes
+
+Four theme variants via two independent settings:
+
+- **Style:** Classic (traditional serif look) or Modern (flat design, indigo accent, system font)
+- **Mode:** Light, Dark, or Auto (follows OS `prefers-color-scheme`)
+
+Theme selector dropdowns appear in the header on all pages. Selection is persisted in `localStorage` and survives page reloads and navigation.
+
 ### JSON API
 
 `GET /api/tree` returns all people as JSON, consumed by the frontend.

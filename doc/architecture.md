@@ -290,6 +290,7 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 | [004](adr/004-goldmark.md) | Goldmark for Markdown rendering | Accepted |
 | [005](adr/005-yaml-frontmatter.md) | YAML frontmatter for person metadata | Superseded by 006 |
 | [006](adr/006-folder-per-person.md) | Folder-per-person data structure | Accepted |
+| [008](adr/008-theme-system.md) | CSS custom property theme system | Accepted |
 
 ---
 

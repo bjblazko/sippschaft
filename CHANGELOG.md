@@ -6,11 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Theme system with four variants: Classic Light, Classic Dark, Modern Light, Modern Dark (ADR-008)
+- Theme selector in the header (style + mode dropdowns) on all pages
+- OS dark/light mode auto-detection via `prefers-color-scheme` with "Auto" option
+- Theme preference persisted in `localStorage` across sessions and pages
+- Drop shadows on SVG tree nodes (classic view rectangles, force view circles) via SVG `feDropShadow` filter
+- Drop shadow on header bar and profile cards via CSS `box-shadow` custom properties
+- Automatic data directory polling every 2 seconds for hot reload without restart
+- 16 additional avatar photos for family members
+- `CHANGELOG.md` following Keep a Changelog format
+
 ### Changed
 
 - Replaced Dagre graph layout with custom genealogy-aware layout algorithm in `tree.js` (ADR-007)
 - Spouse connection lines now attach at the side-center of person boxes instead of the bottom edge
 - Multi-spouse families (e.g. Robert Smith with Linda Johnson and Susan Davis) use a couple-chain layout with all children placed as one group below, preventing visual overlaps
+- Renamed Go module from `genealogy-app` to `sippschaft`
+- Renamed UI title and heading from "Family Tree App" to "Sippschaft"
+- SVG tree colors (gender fills, strokes, line colors, text) now read from CSS custom properties for theme support
 
 ### Removed
 
