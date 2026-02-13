@@ -194,6 +194,236 @@
 }
 
 /* ==========================================================
+   Theme: Neon Light (cyberpunk, electric cyan)
+   ========================================================== */
+[data-theme-style="neon"][data-theme-mode="light"] {
+    --bg-color: #0d1117;
+    --card-bg: #131a24;
+    --text-color: #e0f0ff;
+    --accent-color: #00fff7;
+    --link-color: #00fff7;
+    --header-bg: #080c14;
+    --header-text: #00fff7;
+    --border-color: rgba(0,255,247,0.25);
+    --meta-bg: #101620;
+    --shadow-color: rgba(0,255,247,0.15);
+    --border-radius: 2px;
+    --font-family: 'Courier New', 'Fira Code', 'Fira Mono', monospace;
+
+    --controls-bg: #101620;
+    --controls-shadow: rgba(0,0,0,0.6);
+    --btn-bg: #0d1117;
+    --btn-text: #00fff7;
+    --btn-border: rgba(0,255,247,0.3);
+    --btn-active-bg: rgba(0,255,247,0.15);
+    --btn-active-text: #00fff7;
+    --btn-active-border: #00fff7;
+
+    --line-color: rgba(0,255,247,0.4);
+    --node-text: #e0f0ff;
+    --node-subtext: #70b8d0;
+    --male-fill: #081828;
+    --male-stroke: #00aaff;
+    --female-fill: #1a0828;
+    --female-stroke: #ff00aa;
+    --diverse-fill: #0a1828;
+    --diverse-stroke: #aa44ff;
+    --unknown-fill: #101620;
+    --unknown-stroke: #445566;
+
+    --select-bg: rgba(0,255,247,0.08);
+    --select-text: #00fff7;
+    --select-border: rgba(0,255,247,0.3);
+
+    --photo-border: #00fff7;
+
+    --card-shadow: 0 0 15px rgba(0,255,247,0.12), 0 0 30px rgba(0,255,247,0.04);
+    --header-shadow: 0 0 20px rgba(0,255,247,0.2);
+}
+
+/* ==========================================================
+   Theme: Neon Dark (cyberpunk, hot magenta)
+   ========================================================== */
+[data-theme-style="neon"][data-theme-mode="dark"] {
+    --bg-color: #04060a;
+    --card-bg: #0a0d14;
+    --text-color: #d0e0f8;
+    --accent-color: #ff00aa;
+    --link-color: #ff00aa;
+    --header-bg: #03050a;
+    --header-text: #ff00aa;
+    --border-color: rgba(255,0,170,0.25);
+    --meta-bg: #070a10;
+    --shadow-color: rgba(255,0,170,0.2);
+    --border-radius: 2px;
+    --font-family: 'Courier New', 'Fira Code', 'Fira Mono', monospace;
+
+    --controls-bg: #070a10;
+    --controls-shadow: rgba(0,0,0,0.8);
+    --btn-bg: #04060a;
+    --btn-text: #ff00aa;
+    --btn-border: rgba(255,0,170,0.3);
+    --btn-active-bg: rgba(255,0,170,0.15);
+    --btn-active-text: #ff00aa;
+    --btn-active-border: #ff00aa;
+
+    --line-color: rgba(255,0,170,0.35);
+    --node-text: #d0e0f8;
+    --node-subtext: #7088aa;
+    --male-fill: #060a18;
+    --male-stroke: #0088ff;
+    --female-fill: #180618;
+    --female-stroke: #ff0077;
+    --diverse-fill: #0a0618;
+    --diverse-stroke: #cc44ff;
+    --unknown-fill: #0a0d14;
+    --unknown-stroke: #334455;
+
+    --select-bg: rgba(255,0,170,0.08);
+    --select-text: #ff00aa;
+    --select-border: rgba(255,0,170,0.3);
+
+    --photo-border: #ff00aa;
+
+    --card-shadow: 0 0 20px rgba(255,0,170,0.15), 0 0 40px rgba(255,0,170,0.04);
+    --header-shadow: 0 0 25px rgba(255,0,170,0.25);
+}
+
+/* ==========================================================
+   Neon theme: animations and glow effects
+   ========================================================== */
+@keyframes neon-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+}
+
+@keyframes neon-border-glow {
+    0%, 100% { box-shadow: var(--card-shadow), 0 0 5px var(--accent-color); }
+    50% { box-shadow: var(--card-shadow), 0 0 15px var(--accent-color), 0 0 30px var(--accent-color); }
+}
+
+@keyframes neon-text-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { text-shadow: 0 0 7px var(--accent-color), 0 0 20px var(--accent-color); }
+    20%, 24%, 55% { text-shadow: none; }
+}
+
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+}
+
+/* Neon header glow */
+[data-theme-style="neon"] header {
+    border-bottom: 1px solid var(--accent-color);
+    animation: neon-pulse 3s ease-in-out infinite;
+}
+
+[data-theme-style="neon"] header h1 {
+    text-shadow: 0 0 7px var(--accent-color), 0 0 20px var(--accent-color), 0 0 40px var(--accent-color);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+[data-theme-style="neon"] header nav a {
+    text-shadow: 0 0 5px var(--accent-color), 0 0 15px var(--accent-color);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Neon profile card glow */
+[data-theme-style="neon"] .profile-card {
+    border: 1px solid var(--accent-color);
+    animation: neon-border-glow 3s ease-in-out infinite;
+}
+
+[data-theme-style="neon"] .profile-card h1 {
+    text-shadow: 0 0 7px var(--accent-color), 0 0 20px var(--accent-color);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom-color: var(--accent-color);
+}
+
+/* Neon meta section */
+[data-theme-style="neon"] .meta-info {
+    border: 1px solid var(--border-color);
+}
+
+/* Neon links glow on hover */
+[data-theme-style="neon"] a {
+    transition: text-shadow 0.2s ease;
+}
+
+[data-theme-style="neon"] a:hover {
+    text-shadow: 0 0 7px var(--link-color), 0 0 15px var(--link-color);
+}
+
+/* Neon buttons glow */
+[data-theme-style="neon"] #controls button {
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+[data-theme-style="neon"] #controls button:hover {
+    box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
+}
+
+[data-theme-style="neon"] #controls button.active {
+    box-shadow: 0 0 8px var(--accent-color), 0 0 16px var(--accent-color);
+}
+
+/* Neon select dropdowns */
+[data-theme-style="neon"] .theme-selector select {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: box-shadow 0.2s ease;
+}
+
+[data-theme-style="neon"] .theme-selector select:hover,
+[data-theme-style="neon"] .theme-selector select:focus {
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+/* Neon photo glow */
+[data-theme-style="neon"] .profile-photo img {
+    box-shadow: 0 0 15px var(--shadow-color), 0 0 30px var(--shadow-color);
+}
+
+/* Neon relationship links */
+[data-theme-style="neon"] .rel-group h3 {
+    text-shadow: 0 0 5px var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Neon name history */
+[data-theme-style="neon"] .name-history h3,
+[data-theme-style="neon"] .nicknames h3 {
+    text-shadow: 0 0 5px var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Scanline overlay (subtle) */
+[data-theme-style="neon"] body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* ==========================================================
    Base layout
    ========================================================== */
 body {

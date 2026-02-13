@@ -109,6 +109,45 @@ function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
+function isNeonTheme() {
+    return document.documentElement.dataset.themeStyle === 'neon';
+}
+
+function addDropShadowFilter(svg) {
+    const defs = svg.append("defs");
+    if (isNeonTheme()) {
+        // Neon glow filter: colored outer glow + slight blur
+        const filter = defs.append("filter").attr("id", "drop-shadow")
+            .attr("x", "-50%").attr("y", "-50%").attr("width", "200%").attr("height", "200%");
+        filter.append("feGaussianBlur")
+            .attr("in", "SourceAlpha").attr("stdDeviation", 4).attr("result", "blur");
+        filter.append("feFlood")
+            .attr("flood-color", cssVar('--accent-color')).attr("flood-opacity", "0.5").attr("result", "color");
+        filter.append("feComposite")
+            .attr("in", "color").attr("in2", "blur").attr("operator", "in").attr("result", "glow");
+        const merge = filter.append("feMerge");
+        merge.append("feMergeNode").attr("in", "glow");
+        merge.append("feMergeNode").attr("in", "SourceGraphic");
+
+        // Animated glow filter for lines
+        const lineFilter = defs.append("filter").attr("id", "neon-line-glow")
+            .attr("x", "-50%").attr("y", "-50%").attr("width", "200%").attr("height", "200%");
+        lineFilter.append("feGaussianBlur")
+            .attr("in", "SourceGraphic").attr("stdDeviation", 2).attr("result", "blur");
+        const lineMerge = lineFilter.append("feMerge");
+        lineMerge.append("feMergeNode").attr("in", "blur");
+        lineMerge.append("feMergeNode").attr("in", "SourceGraphic");
+    } else {
+        // Standard drop shadow
+        const filter = defs.append("filter").attr("id", "drop-shadow")
+            .attr("x", "-20%").attr("y", "-20%").attr("width", "140%").attr("height", "140%");
+        filter.append("feDropShadow")
+            .attr("dx", 0).attr("dy", 2).attr("stdDeviation", 3)
+            .attr("flood-color", "rgba(0,0,0,0.2)");
+    }
+    return defs;
+}
+
 function getGenderColor(sex) {
     const s = sex ? sex.toLowerCase() : '';
     if (s === 'male') return cssVar('--male-fill');
@@ -168,13 +207,7 @@ function renderForceTree(peopleMap) {
         }))
         .append("g");
 
-    // Drop shadow filter
-    const defs = svg.append("defs");
-    const filter = defs.append("filter").attr("id", "drop-shadow")
-        .attr("x", "-20%").attr("y", "-20%").attr("width", "140%").attr("height", "140%");
-    filter.append("feDropShadow")
-        .attr("dx", 0).attr("dy", 2).attr("stdDeviation", 3)
-        .attr("flood-color", "rgba(0,0,0,0.2)");
+    addDropShadowFilter(svg);
 
     const g = svg.append("g");
 
@@ -184,13 +217,15 @@ function renderForceTree(peopleMap) {
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collide", d3.forceCollide(40)); // Increased radius
 
+    const neon = isNeonTheme();
     const link = g.append("g")
         .selectAll("line")
         .data(links)
         .enter().append("line")
         .attr("stroke", d => d.type === "spouse" ? cssVar('--female-stroke') : cssVar('--line-color'))
-        .attr("stroke-width", 2)
-        .attr("stroke-dasharray", d => d.type === "spouse" ? "5,5" : "none");
+        .attr("stroke-width", neon ? 1.5 : 2)
+        .attr("stroke-dasharray", d => d.type === "spouse" ? "5,5" : "none")
+        .attr("filter", neon ? "url(#neon-line-glow)" : null);
 
     const node = g.append("g")
         .selectAll("g")
@@ -508,13 +543,9 @@ function renderClassicTree(peopleMap) {
             inner.attr("transform", event.transform);
         }));
 
-    // Drop shadow filter
-    const defs = svg.append("defs");
-    const filter = defs.append("filter").attr("id", "drop-shadow")
-        .attr("x", "-20%").attr("y", "-20%").attr("width", "140%").attr("height", "140%");
-    filter.append("feDropShadow")
-        .attr("dx", 0).attr("dy", 2).attr("stdDeviation", 3)
-        .attr("flood-color", "rgba(0,0,0,0.2)");
+    addDropShadowFilter(svg);
+    const neonClassic = isNeonTheme();
+    const lineFilter = neonClassic ? "url(#neon-line-glow)" : null;
 
     const inner = svg.append("g");
 
@@ -633,6 +664,11 @@ function renderClassicTree(peopleMap) {
                 .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
         });
     });
+
+    // Apply neon glow filter to all connection lines
+    if (neonClassic) {
+        inner.selectAll("line").attr("filter", "url(#neon-line-glow)");
+    }
 
     // --- Draw person nodes ---
     Object.entries(positions).forEach(([pid, pos]) => {

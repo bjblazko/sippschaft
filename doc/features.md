@@ -34,10 +34,12 @@ Each person is a folder in `data/` named `{birth-date}_{surname}_{firstname}`:
 
 ### Themes
 
-Four theme variants via two independent settings:
+Six theme variants via two independent settings:
 
-- **Style:** Classic (traditional serif look) or Modern (flat design, indigo accent, system font)
+- **Style:** Classic (traditional serif look), Modern (flat design, indigo accent, system font), or Neon (cyberpunk/Blade Runner aesthetic)
 - **Mode:** Light, Dark, or Auto (follows OS `prefers-color-scheme`)
+
+The Neon theme features monospace typography, glowing neon borders and text shadows, animated pulsing header, SVG glow filters on tree nodes and connection lines, and a subtle scanline overlay. Light mode uses electric cyan accents; dark mode uses hot magenta.
 
 Theme selector dropdowns appear in the header on all pages. Selection is persisted in `localStorage` and survives page reloads and navigation.
 
