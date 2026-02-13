@@ -34,12 +34,14 @@ Each person is a folder in `data/` named `{birth-date}_{surname}_{firstname}`:
 
 ### Themes
 
-Six theme variants via two independent settings:
+Eight theme variants via two independent settings:
 
-- **Style:** Classic (traditional serif look), Modern (flat design, indigo accent, system font), or Neon (cyberpunk/Blade Runner aesthetic)
+- **Style:** Classic (traditional serif look), Modern (flat design, indigo accent, system font), Neon (cyberpunk/Blade Runner aesthetic), or Home Computer (1980s home computer aesthetic)
 - **Mode:** Light, Dark, or Auto (follows OS `prefers-color-scheme`)
 
 The Neon theme features monospace typography, glowing neon borders and text shadows, animated pulsing header, SVG glow filters on tree nodes and connection lines, and a subtle scanline overlay. Light mode uses electric cyan accents; dark mode uses hot magenta.
+
+The Home Computer theme recreates the look of 1980s home computers. Light mode is inspired by the Amiga Workbench (blue background, gray windows, orange accents, rainbow stripes). Dark mode is inspired by the C64 (purple-blue background with light blue text). Both use beveled 3D buttons, hard pixel shadows, monospace font, and sharp corners.
 
 Theme selector dropdowns appear in the header on all pages. Selection is persisted in `localStorage` and survives page reloads and navigation.
 

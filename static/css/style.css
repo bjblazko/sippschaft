@@ -290,6 +290,102 @@
 }
 
 /* ==========================================================
+   Theme: Home Computer Light (Amiga Workbench inspired)
+   ========================================================== */
+[data-theme-style="home-computer"][data-theme-mode="light"] {
+    --bg-color: #0055aa;
+    --card-bg: #aaaaaa;
+    --text-color: #000000;
+    --accent-color: #ff8800;
+    --link-color: #0000aa;
+    --header-bg: #000080;
+    --header-text: #ff8800;
+    --border-color: #000000;
+    --meta-bg: #999999;
+    --shadow-color: rgba(0,0,0,0.3);
+    --border-radius: 0px;
+    --font-family: 'Courier New', 'Lucida Console', monospace;
+
+    --controls-bg: #aaaaaa;
+    --controls-shadow: rgba(0,0,0,0.4);
+    --btn-bg: #bbbbbb;
+    --btn-text: #000000;
+    --btn-border: #000000;
+    --btn-active-bg: #ff8800;
+    --btn-active-text: #000000;
+    --btn-active-border: #000000;
+
+    --line-color: #000000;
+    --node-text: #000000;
+    --node-subtext: #333333;
+    --male-fill: #5599dd;
+    --male-stroke: #000080;
+    --female-fill: #ee7777;
+    --female-stroke: #aa0000;
+    --diverse-fill: #aa88dd;
+    --diverse-stroke: #660099;
+    --unknown-fill: #bbbbbb;
+    --unknown-stroke: #444444;
+
+    --select-bg: #bbbbbb;
+    --select-text: #000000;
+    --select-border: #000000;
+
+    --photo-border: #000000;
+
+    --card-shadow: 3px 3px 0px #000000;
+    --header-shadow: 0 3px 0px #000000;
+}
+
+/* ==========================================================
+   Theme: Home Computer Dark (C64 inspired)
+   ========================================================== */
+[data-theme-style="home-computer"][data-theme-mode="dark"] {
+    --bg-color: #40318d;
+    --card-bg: #40318d;
+    --text-color: #7c71da;
+    --accent-color: #7c71da;
+    --link-color: #71c5cf;
+    --header-bg: #352879;
+    --header-text: #7c71da;
+    --border-color: #7c71da;
+    --meta-bg: #352879;
+    --shadow-color: rgba(0,0,0,0.5);
+    --border-radius: 0px;
+    --font-family: 'Courier New', 'Lucida Console', monospace;
+
+    --controls-bg: #352879;
+    --controls-shadow: rgba(0,0,0,0.6);
+    --btn-bg: #40318d;
+    --btn-text: #7c71da;
+    --btn-border: #7c71da;
+    --btn-active-bg: #7c71da;
+    --btn-active-text: #40318d;
+    --btn-active-border: #7c71da;
+
+    --line-color: #7c71da;
+    --node-text: #7c71da;
+    --node-subtext: #9990e0;
+    --male-fill: #352879;
+    --male-stroke: #71c5cf;
+    --female-fill: #352879;
+    --female-stroke: #e06060;
+    --diverse-fill: #352879;
+    --diverse-stroke: #aa88dd;
+    --unknown-fill: #352879;
+    --unknown-stroke: #7c71da;
+
+    --select-bg: #352879;
+    --select-text: #7c71da;
+    --select-border: #7c71da;
+
+    --photo-border: #7c71da;
+
+    --card-shadow: 3px 3px 0px #000000;
+    --header-shadow: 0 3px 0px #000000;
+}
+
+/* ==========================================================
    Neon theme: animations and glow effects
    ========================================================== */
 @keyframes neon-pulse {
@@ -421,6 +517,142 @@
     );
     pointer-events: none;
     z-index: 9999;
+}
+
+/* ==========================================================
+   Home Computer theme: 1980s effects
+   ========================================================== */
+@keyframes rainbow-shift {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+@keyframes cursor-blink {
+    0%, 49% { border-right-color: var(--accent-color); }
+    50%, 100% { border-right-color: transparent; }
+}
+
+/* Rainbow stripe on header bottom */
+[data-theme-style="home-computer"] header {
+    border-bottom: 4px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        #ff0000 0%, #ff0000 16.66%,
+        #ff8800 16.66%, #ff8800 33.33%,
+        #ffff00 33.33%, #ffff00 50%,
+        #00cc00 50%, #00cc00 66.66%,
+        #0088ff 66.66%, #0088ff 83.33%,
+        #8800ff 83.33%, #8800ff 100%
+    ) 4;
+}
+
+[data-theme-style="home-computer"] header h1 {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: bold;
+}
+
+[data-theme-style="home-computer"] header nav a {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: bold;
+}
+
+/* Home Computer profile card: hard shadow, thick border */
+[data-theme-style="home-computer"] .profile-card {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme-style="home-computer"] .profile-card h1 {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Rainbow bar above biography */
+[data-theme-style="home-computer"] .biography {
+    border-top: 4px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        #ff0000 0%, #ff0000 16.66%,
+        #ff8800 16.66%, #ff8800 33.33%,
+        #ffff00 33.33%, #ffff00 50%,
+        #00cc00 50%, #00cc00 66.66%,
+        #0088ff 66.66%, #0088ff 83.33%,
+        #8800ff 83.33%, #8800ff 100%
+    ) 4;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Home Computer meta section */
+[data-theme-style="home-computer"] .meta-info {
+    border: 2px solid var(--border-color);
+}
+
+/* Home Computer headings in profile */
+[data-theme-style="home-computer"] .rel-group h3,
+[data-theme-style="home-computer"] .name-history h3,
+[data-theme-style="home-computer"] .nicknames h3 {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Home Computer buttons: beveled 3D look */
+[data-theme-style="home-computer"] #controls button {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 2px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+[data-theme-style="home-computer"] #controls button:active {
+    border-color: #555555 #ffffff #ffffff #555555;
+}
+
+[data-theme-style="home-computer"] #controls button.active {
+    border-color: #555555 #ffffff #ffffff #555555;
+}
+
+/* Home Computer selects */
+[data-theme-style="home-computer"] .theme-selector select {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 2px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+/* Home Computer photo: thick border, no rounding */
+[data-theme-style="home-computer"] .profile-photo img {
+    border: 3px solid var(--photo-border);
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+}
+
+/* Home Computer link styling */
+[data-theme-style="home-computer"] .rel-group li a {
+    text-decoration: underline;
+}
+
+/* Dithered background pattern (light mode only) */
+[data-theme-style="home-computer"][data-theme-mode="light"] body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-conic-gradient(
+        #0055aa 0% 25%, transparent 0% 50%
+    ) 0 0 / 4px 4px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* C64-style border flash for dark mode */
+[data-theme-style="home-computer"][data-theme-mode="dark"] .profile-card {
+    border: 2px solid var(--accent-color);
 }
 
 /* ==========================================================

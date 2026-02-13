@@ -10,7 +10,7 @@ The app had a single hardcoded light visual style. Users want to choose between 
 
 Implement a theme system using CSS custom properties (`--var`) and `data-*` attributes on the `<html>` element. Two independent axes:
 
-- **Style** (`data-theme-style`): `classic`, `modern`, or `neon` -- controls font, accent colors, border radius, and overall visual feel.
+- **Style** (`data-theme-style`): `classic`, `modern`, `neon`, or `home-computer` -- controls font, accent colors, border radius, and overall visual feel.
 - **Mode** (`data-theme-mode`): `light` or `dark` -- controls background, text, and contrast colors. An "auto" setting resolves to light/dark based on the OS `prefers-color-scheme` media query.
 
 Theme state is stored in `localStorage` and applied immediately on page load (before body renders) via a `<script>` in `<head>` to prevent flash of unstyled content.
@@ -20,7 +20,7 @@ SVG tree colors (gender fills, strokes, connection lines, text) are read from CS
 ## Consequences
 
 - Zero additional dependencies -- pure CSS and vanilla JS.
-- Six theme variants (classic-light/dark, modern-light/dark, neon-light/dark) from a single stylesheet.
+- Eight theme variants (classic, modern, neon, home-computer -- each with light/dark) from a single stylesheet.
 - Adding new themes only requires a new CSS variable block with a `[data-theme-style="x"][data-theme-mode="y"]` selector.
 - Themes can include style-specific CSS rules (e.g. `[data-theme-style="neon"]`) for animations, glow effects, and other enhancements beyond variable overrides.
 - The `theme.js` script must be loaded in `<head>` on every page that needs theming.

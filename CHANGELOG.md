@@ -8,11 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Theme system with six variants: Classic Light/Dark, Modern Light/Dark, Neon Light/Dark (ADR-008)
+- Theme system with eight variants: Classic, Modern, Neon, and Home Computer -- each with Light/Dark mode (ADR-008)
 - Theme selector in the header (style + mode dropdowns) on all pages
 - OS dark/light mode auto-detection via `prefers-color-scheme` with "Auto" option
 - Theme preference persisted in `localStorage` across sessions and pages
 - Neon theme (Blade Runner / cyberpunk aesthetic) with monospace font, glowing borders, pulsing header, text-shadow effects, scanline overlay, and neon-colored SVG glow filters on tree nodes and connection lines
+- Home Computer theme (1980s home computer aesthetic): light mode inspired by Amiga Workbench (blue/orange/gray with rainbow stripes), dark mode inspired by C64 (purple/blue with light blue text); both with beveled 3D buttons, hard pixel shadows, and zero border-radius
 - Drop shadows on SVG tree nodes (classic view rectangles, force view circles) via SVG `feDropShadow` filter
 - Drop shadow on header bar and profile cards via CSS `box-shadow` custom properties
 - Automatic data directory polling every 2 seconds for hot reload without restart
