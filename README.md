@@ -31,6 +31,7 @@ Clicking a node opens the person's profile page with photo, dates, biography ren
 - [Person Author Guide](doc/person-guide.md) -- how to add and edit family members
 - [Changelog](CHANGELOG.md)
 - [Features & Roadmap](doc/features.md)
+- [Ideas](doc/ideas.md) -- future feature concepts and rough designs
 - [Architecture (arc42)](doc/architecture.md)
 - [Vision & Principles](doc/vision.md)
 - [Personas](doc/personas.md)
