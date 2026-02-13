@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Drop shadow on header bar and profile cards via CSS `box-shadow` custom properties
 - Automatic data directory polling every 2 seconds for hot reload without restart
 - 16 additional avatar photos for family members
+- Name history support: `names` list in YAML for tracking birth names, married names, and other name changes over time with optional type and date
+- Nickname support: `nicknames` list in YAML, displayed separately on the profile page
 - `CHANGELOG.md` following Keep a Changelog format
 
 ### Changed
@@ -26,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Renamed Go module from `genealogy-app` to `sippschaft`
 - Renamed UI title and heading from "Family Tree App" to "Sippschaft"
 - SVG tree colors (gender fills, strokes, line colors, text) now read from CSS custom properties for theme support
+- Person profile pages strip the leading `<h1>` from rendered markdown to avoid duplicating the name shown from YAML metadata
 
 ### Removed
 

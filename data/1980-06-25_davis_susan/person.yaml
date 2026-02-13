@@ -1,6 +1,12 @@
-name: Susan Davis
+name: Susan Smith
 sex: female
 birth: "1980-06-25"
+names:
+    - name: Susan Davis
+      type: birth
+    - name: Susan Smith
+      type: married
+      since: "2008"
 parents: []
 spouses:
     - 1973-02-14_smith_robert

@@ -370,6 +370,39 @@ main:has(#tree-container) {
     text-decoration: underline;
 }
 
+.name-history,
+.nicknames {
+    margin-bottom: 1.5rem;
+}
+
+.name-history h3,
+.nicknames h3 {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.name-history ul,
+.nicknames ul {
+    list-style: none;
+    padding: 0;
+}
+
+.name-history li {
+    padding: 0.25rem 0;
+}
+
+.name-type {
+    color: var(--node-subtext);
+    font-style: italic;
+    margin-left: 0.25rem;
+}
+
+.name-since {
+    color: var(--node-subtext);
+    font-size: 0.9rem;
+}
+
 .biography {
     font-size: 1.1rem;
 }

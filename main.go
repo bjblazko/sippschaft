@@ -10,11 +10,14 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"sync"
 	"time"
 
 	"github.com/yuin/goldmark"
 )
+
+var reLeadingH1 = regexp.MustCompile(`(?s)^\s*<h1>.*?</h1>\s*`)
 
 var (
 	people    map[string]*model.Person
@@ -146,12 +149,15 @@ func handlePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Strip leading <h1> to avoid duplicating the name already shown from YAML metadata
+	html := reLeadingH1.ReplaceAll(buf.Bytes(), nil)
+
 	data := struct {
 		Person  *model.Person
 		Content template.HTML
 	}{
 		Person:  p,
-		Content: template.HTML(buf.String()),
+		Content: template.HTML(html),
 	}
 
 	if err := templates.ExecuteTemplate(w, "person.html", data); err != nil {

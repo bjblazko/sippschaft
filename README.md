@@ -4,6 +4,7 @@ A family tree web app that visualizes genealogy data as an interactive tree. Fam
 
 ## Documentation
 
+- [Person Author Guide](doc/person-guide.md) -- how to add and edit family members
 - [Changelog](CHANGELOG.md)
 - [Features & Roadmap](doc/features.md)
 - [Architecture (arc42)](doc/architecture.md)
@@ -23,27 +24,7 @@ data/
     avatar.png      # profile photo (optional)
 ```
 
-**person.yaml:**
-
-```yaml
-name: Jane Doe
-sex: female
-birth: "1982-05-20"
-death: ""
-parents: ["1952-03-30_doe_frank", "1954-07-22_smith_alice"]
-spouses: ["1980-01-01_doe_john"]
-children: ["2010-01-01_doe_baby"]
-```
-
-**person.md:**
-
-```markdown
-# Jane Doe
-
-A biography written in Markdown goes here.
-```
-
-Relationships reference other people by their folder name.
+See the [Person Author Guide](doc/person-guide.md) for the full YAML reference, name history, nicknames, and tips.
 
 ## Running the App
 

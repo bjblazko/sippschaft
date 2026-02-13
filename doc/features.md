@@ -17,14 +17,16 @@ Clicking a node navigates to `/person/{id}` which shows:
 
 - Photo (if provided)
 - Name, birth date, death date, sex
-- Biography rendered from Markdown
+- Name history (birth name, married names, etc.) with optional type and date
+- Nicknames / also-known-as
+- Biography rendered from Markdown (leading H1 stripped to avoid duplicating the name)
 - Links to parents, spouses, and children (by ID)
 
 ### Data Format
 
 Each person is a folder in `data/` named `{birth-date}_{surname}_{firstname}`:
 
-- `person.yaml` -- structured metadata: `name`, `sex`, `birth`, `death`, `parents`, `spouses`, `children`
+- `person.yaml` -- structured metadata: `name`, `sex`, `birth`, `death`, `parents`, `spouses`, `children`, plus optional `names` (name history) and `nicknames`
 - `person.md` -- biography in pure Markdown (no frontmatter)
 - `avatar.{png,jpg,...}` -- profile photo (auto-detected by convention)
 - The folder name is the canonical ID. Relationships reference other folder names.

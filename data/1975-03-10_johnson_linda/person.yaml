@@ -1,6 +1,12 @@
-name: Linda Johnson
+name: Linda Smith
 sex: female
 birth: "1975-03-10"
+names:
+    - name: Linda Johnson
+      type: birth
+    - name: Linda Smith
+      type: married
+      since: "1998"
 parents: []
 spouses:
     - 1973-02-14_smith_robert

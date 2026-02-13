@@ -51,6 +51,32 @@
                 </div>
             </div>
 
+            {{if .Person.Names}}
+            <div class="name-history">
+                <h3>Names</h3>
+                <ul>
+                    {{range .Person.Names}}
+                    <li>
+                        <span class="name-entry">{{.Name}}</span>
+                        {{if .Type}}<span class="name-type">({{.Type}})</span>{{end}}
+                        {{if .Since}}<span class="name-since">— since {{.Since}}</span>{{end}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            {{end}}
+
+            {{if .Person.Nicknames}}
+            <div class="nicknames">
+                <h3>Also known as</h3>
+                <ul>
+                    {{range .Person.Nicknames}}
+                    <li>{{.}}</li>
+                    {{end}}
+                </ul>
+            </div>
+            {{end}}
+
             <div class="biography">
                 {{.Content}}
             </div>

@@ -593,6 +593,47 @@ function renderClassicTree(peopleMap) {
         });
     });
 
+    // --- Draw single-parent connection lines ---
+    // Handle parents who have children but no spouse (or children with only one known parent)
+    Object.values(peopleMap).forEach(person => {
+        if (!person.children || person.children.length === 0) return;
+        if (person.spouses && person.spouses.length > 0) return; // already handled above
+        const parentPos = positions[person.id];
+        if (!parentPos) return;
+
+        const kids = person.children.filter(cid => positions[cid]);
+        if (kids.length === 0) return;
+
+        const sorted = kids.map(cid => positions[cid]).sort((a, b) => a.x - b.x);
+        const parentBottomY = parentPos.y + NODE_H / 2;
+        const childTopY = Math.min(...sorted.map(c => c.y - NODE_H / 2));
+        const barY = (parentBottomY + childTopY) / 2;
+
+        // Vertical from parent bottom to bar
+        inner.append("line")
+            .attr("x1", parentPos.x).attr("y1", parentBottomY)
+            .attr("x2", parentPos.x).attr("y2", barY)
+            .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
+
+        // Horizontal bar
+        const barL = Math.min(sorted[0].x, parentPos.x);
+        const barR = Math.max(sorted[sorted.length - 1].x, parentPos.x);
+        if (barL !== barR) {
+            inner.append("line")
+                .attr("x1", barL).attr("y1", barY)
+                .attr("x2", barR).attr("y2", barY)
+                .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
+        }
+
+        // Vertical drops to each child
+        sorted.forEach(cpos => {
+            inner.append("line")
+                .attr("x1", cpos.x).attr("y1", barY)
+                .attr("x2", cpos.x).attr("y2", cpos.y - NODE_H / 2)
+                .attr("stroke", cssVar('--line-color')).attr("stroke-width", 1.5);
+        });
+    });
+
     // --- Draw person nodes ---
     Object.entries(positions).forEach(([pid, pos]) => {
         const p = peopleMap[pid];

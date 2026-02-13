@@ -1,7 +1,16 @@
-name: Margaret Jones
+name: Margaret Smith
 sex: female
 birth: "1928-09-15"
 death: "2010-02-14"
+names:
+    - name: Margaret Jones
+      type: birth
+    - name: Margaret Smith
+      type: married
+      since: "1948"
+nicknames:
+    - Maggie
+    - Nana Meg
 parents: []
 spouses:
     - 1925-04-10_smith_harold
