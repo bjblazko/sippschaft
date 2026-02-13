@@ -90,7 +90,7 @@
                     <h3>Parents</h3>
                     <ul>
                         {{range .Person.Parents}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>
                         {{end}}
                     </ul>
                 </div>
@@ -101,7 +101,7 @@
                     <h3>Spouses</h3>
                     <ul>
                         {{range .Person.Spouses}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>
                         {{end}}
                     </ul>
                 </div>
@@ -112,7 +112,7 @@
                     <h3>Children</h3>
                     <ul>
                         {{range .Person.Children}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>
                         {{end}}
                     </ul>
                 </div>

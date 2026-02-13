@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Export button in the header on all pages
 - Tree page in export uses inline JSON data instead of API fetch, enabling `file://` usage without a server
 
+### Fixed
+
+- Person profile relationship links now show display names instead of raw folder IDs
+
 ## [0.2.0] - 2026-02-13
 
 ### Added

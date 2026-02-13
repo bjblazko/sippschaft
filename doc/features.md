@@ -81,7 +81,7 @@ Items below are gaps or natural next steps identified from the current codebase.
 
 ### Person Profile
 
-- [ ] **Show names instead of IDs** -- Relationship links display raw IDs (e.g. `john-doe`) instead of the person's display name.
+- [x] **Show names instead of IDs** -- Relationship links display the person's name instead of the raw folder ID.
 - [ ] **Multiple photos / gallery** -- Currently only one photo per person.
 - [ ] **Timeline view** -- Show a person's life events on a timeline.
 

@@ -153,6 +153,7 @@ func handlePerson(w http.ResponseWriter, r *http.Request) {
 
 	peopleMux.RLock()
 	p, ok := people[id]
+	names := buildNameMap()
 	peopleMux.RUnlock()
 
 	if !ok {
@@ -173,14 +174,26 @@ func handlePerson(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Person  *model.Person
 		Content template.HTML
+		Names   map[string]string
 	}{
 		Person:  p,
 		Content: template.HTML(html),
+		Names:   names,
 	}
 
 	if err := templates.ExecuteTemplate(w, "person.html", data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+// buildNameMap returns a map from person ID to display name.
+// Must be called while holding peopleMux (at least RLock).
+func buildNameMap() map[string]string {
+	m := make(map[string]string, len(people))
+	for id, p := range people {
+		m[id] = p.Name
+	}
+	return m
 }
 
 func handleExport(w http.ResponseWriter, r *http.Request) {
@@ -224,6 +237,7 @@ func handleExport(w http.ResponseWriter, r *http.Request) {
 	f.Write(indexBuf.Bytes())
 
 	// 3. Render and add person pages
+	names := buildNameMap()
 	for id, p := range people {
 		var mdBuf bytes.Buffer
 		if err := goldmark.Convert([]byte(p.Content), &mdBuf); err != nil {
@@ -244,9 +258,11 @@ func handleExport(w http.ResponseWriter, r *http.Request) {
 		personData := struct {
 			Person  *model.Person
 			Content template.HTML
+			Names   map[string]string
 		}{
 			Person:  &ep,
 			Content: template.HTML(htmlStr),
+			Names:   names,
 		}
 
 		var personBuf bytes.Buffer
