@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sippschaft</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/theme.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/theme.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        window.__SIPPSCHAFT_STATIC__ = true;
+        window.__SIPPSCHAFT_DATA__ = {{.DataJSON}};
+    </script>
 </head>
 
 <body>
@@ -30,12 +34,11 @@
                 <option value="dark">Dark</option>
             </select>
         </div>
-        <a href="/export" class="export-btn" title="Download as static site">Export</a>
     </header>
     <main>
         <div id="tree-container"></div>
     </main>
-    <script src="/static/js/tree.js"></script>
+    <script src="static/js/tree.js"></script>
 </body>
 
 </html>

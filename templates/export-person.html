@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Person.Name}} - Sippschaft</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/theme.js"></script>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/theme.js"></script>
 </head>
 
 <body>
     <header>
         <nav>
-            <a href="/">&larr; Back to Tree</a>
+            <a href="../index.html">&larr; Back to Tree</a>
         </nav>
         <div class="theme-selector">
             <select id="theme-style">
@@ -27,7 +27,6 @@
                 <option value="dark">Dark</option>
             </select>
         </div>
-        <a href="/export" class="export-btn" title="Download as static site">Export</a>
     </header>
     <main class="profile-container">
         <article class="profile-card">
@@ -90,7 +89,7 @@
                     <h3>Parents</h3>
                     <ul>
                         {{range .Person.Parents}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="{{.}}.html">{{.}}</a></li>
                         {{end}}
                     </ul>
                 </div>
@@ -101,7 +100,7 @@
                     <h3>Spouses</h3>
                     <ul>
                         {{range .Person.Spouses}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="{{.}}.html">{{.}}</a></li>
                         {{end}}
                     </ul>
                 </div>
@@ -112,7 +111,7 @@
                     <h3>Children</h3>
                     <ul>
                         {{range .Person.Children}}
-                        <li><a href="/person/{{.}}">{{.}}</a></li>
+                        <li><a href="{{.}}.html">{{.}}</a></li>
                         {{end}}
                     </ul>
                 </div>

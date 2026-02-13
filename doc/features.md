@@ -45,6 +45,17 @@ The Home Computer theme recreates the look of 1980s home computers. Light mode i
 
 Theme selector dropdowns appear in the header on all pages. Selection is persisted in `localStorage` and survives page reloads and navigation.
 
+### Static Site Export
+
+`GET /export` (or the "Export" button in the header) downloads a ZIP archive containing the entire family tree as a self-contained static site. The ZIP includes:
+
+- `index.html` with tree data embedded as inline JSON (no API call needed)
+- Pre-rendered `person/{id}.html` pages for every family member
+- All static assets (CSS, JS) and avatar photos
+- All paths are relative, so the site works when opened via `file://` or deployed to any static hosting
+
+Theme switching works fully in the exported site since it is implemented entirely in client-side CSS and JavaScript. D3.js is loaded from CDN, so an internet connection is required for the tree visualization.
+
 ### JSON API
 
 `GET /api/tree` returns all people as JSON, consumed by the frontend.
@@ -79,7 +90,7 @@ Items below are gaps or natural next steps identified from the current codebase.
 - [x] **Configurable data directory** -- Use `--data` flag or `DATA` environment variable to point to a different data folder. Defaults to `./data`.
 - [x] **Hot reload without restart** -- The server polls the data directory every 2 seconds and automatically reloads when files change.
 - [ ] **Configurable port** -- Port 8080 is hardcoded.
-- [ ] **Static site generation** -- Export the tree as a static HTML site for hosting without a server.
+- [x] **Static site export** -- `GET /export` downloads a ZIP with the complete tree as static HTML/JS/CSS. Works via `file://` or any static host.
 - [ ] **Tests** -- No test files exist in the project.
 - [ ] **Docker support** -- No Dockerfile for containerized deployment.
 - [ ] **CI/CD** -- No GitHub Actions or similar pipeline.

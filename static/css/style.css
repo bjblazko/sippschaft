@@ -741,6 +741,22 @@ main:has(#tree-container) {
     color: var(--text-color);
 }
 
+.export-btn {
+    color: var(--select-text);
+    border: 1px solid var(--select-border);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--select-bg);
+    white-space: nowrap;
+}
+
+.export-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
 /* ==========================================================
    Tree view controls
    ========================================================== */

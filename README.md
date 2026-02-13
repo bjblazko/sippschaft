@@ -71,3 +71,7 @@ Or set the `DATA` environment variable:
 ```
 DATA=/path/to/my/family go run main.go
 ```
+
+## Exporting as Static Site
+
+Click the **Export** button in the header (or visit `/export`) to download the entire family tree as a ZIP archive. The ZIP contains a self-contained static site that works without a server -- just unzip and open `index.html` in a browser. Theme switching is fully supported. You can also deploy the exported files to any static hosting service.

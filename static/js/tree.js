@@ -1,6 +1,14 @@
 let currentData = null;
 let currentView = 'classic'; // 'force' or 'classic'
 
+// In static export mode, links are relative HTML files instead of server routes
+function personUrl(id) {
+    if (window.__SIPPSCHAFT_STATIC__) {
+        return 'person/' + id + '.html';
+    }
+    return '/person/' + id;
+}
+
 function getContainerSize() {
     const el = document.getElementById('tree-container');
     const rect = el.getBoundingClientRect();
@@ -34,14 +42,20 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Classic Button NOT found");
     }
 
-    fetch('/api/tree')
-        .then(response => response.json())
-        .then(data => {
-            console.log("Data fetched", data);
-            currentData = data;
-            renderTree();
-        })
-        .catch(error => console.error('Error fetching tree data:', error));
+    if (window.__SIPPSCHAFT_DATA__) {
+        console.log("Using inline data");
+        currentData = window.__SIPPSCHAFT_DATA__;
+        renderTree();
+    } else {
+        fetch('/api/tree')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data fetched", data);
+                currentData = data;
+                renderTree();
+            })
+            .catch(error => console.error('Error fetching tree data:', error));
+    }
 
     window.addEventListener('resize', () => {
         if (currentData) renderTree();
@@ -279,7 +293,7 @@ function renderForceTree(peopleMap) {
         .attr("fill", cssVar('--node-subtext'));
 
     node.on("click", (event, d) => {
-        window.location.href = `/person/${d.id}`;
+        window.location.href = personUrl(d.id);
     });
 
     simulation.on("tick", () => {
@@ -661,7 +675,7 @@ function renderClassicTree(peopleMap) {
         const group = inner.append("g")
             .attr("transform", `translate(${pos.x - NODE_W / 2}, ${pos.y - NODE_H / 2})`)
             .style("cursor", "pointer")
-            .on("click", () => { window.location.href = `/person/${pid}`; });
+            .on("click", () => { window.location.href = personUrl(pid); });
 
         group.append("rect")
             .attr("width", NODE_W)

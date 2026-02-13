@@ -83,6 +83,7 @@ C4Context
 | D3.js + custom layout for visualization | D3 for SVG rendering/zoom, custom genealogy-aware layout algorithm | [ADR-003](adr/003-d3-dagre.md) |
 | Goldmark for Markdown rendering | CommonMark-compliant, actively maintained | [ADR-004](adr/004-goldmark.md) |
 | Folder-per-person data structure | Co-locates metadata, biography, and assets | [ADR-006](adr/006-folder-per-person.md) |
+| Static site export as ZIP | Single-request export, works offline via `file://` | [ADR-009](adr/009-static-export.md) |
 
 ---
 
@@ -291,6 +292,7 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 | [005](adr/005-yaml-frontmatter.md) | YAML frontmatter for person metadata | Superseded by 006 |
 | [006](adr/006-folder-per-person.md) | Folder-per-person data structure | Accepted |
 | [008](adr/008-theme-system.md) | CSS custom property theme system | Accepted |
+| [009](adr/009-static-export.md) | Static site export as ZIP | Accepted |
 
 ---
 

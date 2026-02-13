@@ -1,11 +1,10 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"flag"
-	"sippschaft/model"
-	"sippschaft/parser"
 	"html/template"
 	"io/fs"
 	"log"
@@ -13,6 +12,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sippschaft/model"
+	"sippschaft/parser"
+	"strings"
 	"sync"
 	"time"
 
@@ -63,6 +65,7 @@ func main() {
 
 	// API
 	mux.HandleFunc("/api/tree", handleTreeAPI)
+	mux.HandleFunc("/export", handleExport)
 
 	// Pages
 	mux.HandleFunc("/", handleIndex)
@@ -178,4 +181,115 @@ func handlePerson(w http.ResponseWriter, r *http.Request) {
 	if err := templates.ExecuteTemplate(w, "person.html", data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func handleExport(w http.ResponseWriter, r *http.Request) {
+	peopleMux.RLock()
+	defer peopleMux.RUnlock()
+
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", `attachment; filename="sippschaft-export.zip"`)
+
+	zw := zip.NewWriter(w)
+	defer zw.Close()
+
+	// 1. Build JSON data with relative photo paths (for the tree page)
+	exportData := make(map[string]*model.Person)
+	for id, p := range people {
+		ep := *p
+		if ep.Photo != "" {
+			ep.Photo = strings.TrimPrefix(ep.Photo, "/")
+		}
+		ep.Content = "" // not needed in tree JSON
+		exportData[id] = &ep
+	}
+	dataJSON, err := json.Marshal(exportData)
+	if err != nil {
+		http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
+		return
+	}
+
+	// 2. Render and add index.html with embedded JSON data
+	indexData := struct {
+		DataJSON template.JS
+	}{
+		DataJSON: template.JS(dataJSON),
+	}
+	var indexBuf bytes.Buffer
+	if err := templates.ExecuteTemplate(&indexBuf, "export-index.html", indexData); err != nil {
+		http.Error(w, "Failed to render index: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	f, _ := zw.Create("index.html")
+	f.Write(indexBuf.Bytes())
+
+	// 3. Render and add person pages
+	for id, p := range people {
+		var mdBuf bytes.Buffer
+		if err := goldmark.Convert([]byte(p.Content), &mdBuf); err != nil {
+			continue
+		}
+		htmlBytes := reLeadingH1.ReplaceAll(mdBuf.Bytes(), nil)
+
+		// Adjust absolute /data/ paths in biography HTML to relative ../data/
+		htmlStr := strings.ReplaceAll(string(htmlBytes), `"/data/`, `"../data/`)
+		htmlStr = strings.ReplaceAll(htmlStr, `'/data/`, `'../data/`)
+
+		// Create person copy with photo path relative to person/ directory
+		ep := *p
+		if ep.Photo != "" {
+			ep.Photo = "../" + strings.TrimPrefix(ep.Photo, "/")
+		}
+
+		personData := struct {
+			Person  *model.Person
+			Content template.HTML
+		}{
+			Person:  &ep,
+			Content: template.HTML(htmlStr),
+		}
+
+		var personBuf bytes.Buffer
+		if err := templates.ExecuteTemplate(&personBuf, "export-person.html", personData); err != nil {
+			continue
+		}
+		f, _ := zw.Create("person/" + id + ".html")
+		f.Write(personBuf.Bytes())
+	}
+
+	// 4. Copy static assets
+	for _, sf := range []string{"static/css/style.css", "static/js/theme.js", "static/js/tree.js"} {
+		content, err := os.ReadFile(sf)
+		if err != nil {
+			continue
+		}
+		f, _ := zw.Create(sf)
+		f.Write(content)
+	}
+
+	// 5. Copy data assets (photos and other media, skip YAML and Markdown source files)
+	for id := range people {
+		personDir := filepath.Join(dataDir, id)
+		entries, err := os.ReadDir(personDir)
+		if err != nil {
+			continue
+		}
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			ext := strings.ToLower(filepath.Ext(entry.Name()))
+			if ext == ".yaml" || ext == ".yml" || ext == ".md" {
+				continue
+			}
+			content, err := os.ReadFile(filepath.Join(personDir, entry.Name()))
+			if err != nil {
+				continue
+			}
+			f, _ := zw.Create("data/" + id + "/" + entry.Name())
+			f.Write(content)
+		}
+	}
+
+	log.Printf("Export ZIP generated with %d people", len(people))
 }
