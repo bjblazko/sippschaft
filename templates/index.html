@@ -7,6 +7,7 @@
     <title>Sippschaft</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/i18n.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
@@ -14,23 +15,36 @@
     <header>
         <h1>Sippschaft</h1>
         <div id="controls">
-            <button id="btn-classic" class="active">Tree View</button>
-            <button id="btn-force">Node View</button>
+            <button id="btn-classic" class="active" data-i18n="view.tree">Tree View</button>
+            <button id="btn-force" data-i18n="view.node">Node View</button>
         </div>
         <div class="theme-selector">
             <select id="theme-style">
-                <option value="classic">Classic</option>
-                <option value="modern">Modern</option>
-                <option value="neon">Neon</option>
-                <option value="home-computer">Home Computer</option>
+                <option value="classic" data-i18n="theme.classic">Classic</option>
+                <option value="modern" data-i18n="theme.modern">Modern</option>
+                <option value="neon" data-i18n="theme.neon">Neon</option>
+                <option value="home-computer" data-i18n="theme.homeComputer">Home Computer</option>
             </select>
             <select id="theme-mode">
-                <option value="auto">Auto</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
+                <option value="auto" data-i18n="mode.auto">Auto</option>
+                <option value="light" data-i18n="mode.light">Light</option>
+                <option value="dark" data-i18n="mode.dark">Dark</option>
             </select>
         </div>
-        <a href="/export" class="export-btn" title="Download as static site">Export</a>
+        <div class="header-menu">
+            <button class="header-menu-toggle" title="Menu" aria-label="Menu">&#8942;</button>
+            <div class="header-menu-dropdown">
+                <a href="/export" class="header-menu-item" data-i18n="menu.export">Export as static site</a>
+                <hr class="header-menu-separator">
+                <div class="header-menu-group">
+                    <span class="header-menu-label" data-i18n="menu.language">Language</span>
+                    <select id="lang-select">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </header>
     <main>
         <div id="tree-container"></div>

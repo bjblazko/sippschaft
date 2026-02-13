@@ -758,20 +758,88 @@ main:has(#tree-container) {
     color: var(--text-color);
 }
 
-.export-btn {
+/* ==========================================================
+   Header menu (ellipsis dropdown)
+   ========================================================== */
+.header-menu {
+    position: relative;
+}
+
+.header-menu-toggle {
+    background: var(--select-bg);
     color: var(--select-text);
     border: 1px solid var(--select-border);
     border-radius: 4px;
-    padding: 4px 12px;
-    font-size: 0.85rem;
-    text-decoration: none;
+    padding: 2px 8px;
+    font-size: 1.3rem;
+    line-height: 1;
     cursor: pointer;
-    background: var(--select-bg);
+}
+
+.header-menu-toggle:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.header-menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    min-width: 200px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.header-menu-dropdown.open {
+    display: block;
+}
+
+.header-menu-item {
+    display: block;
+    padding: 10px 16px;
+    color: var(--text-color);
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.header-menu-item:hover {
+    background: var(--meta-bg);
+}
+
+.header-menu-separator {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 4px 0;
+}
+
+.header-menu-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    gap: 12px;
+}
+
+.header-menu-label {
+    color: var(--text-color);
+    font-size: 0.9rem;
     white-space: nowrap;
 }
 
-.export-btn:hover {
-    background: rgba(255,255,255,0.25);
+.header-menu-group select {
+    background: var(--meta-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
 }
 
 /* ==========================================================

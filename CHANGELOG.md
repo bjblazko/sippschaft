@@ -8,8 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Localisation support: English and German, switchable via language selector in the ellipsis menu (ADR-010)
+- Language preference persisted in `localStorage`, applied on all pages including static export
+- Ellipsis menu (⋮) in the header containing export and language controls
 - Static site export: `GET /export` returns a ZIP archive containing the complete family tree as a self-contained static site (ADR-009)
-- Export button in the header on all pages
 - Tree page in export uses inline JSON data instead of API fetch, enabling `file://` usage without a server
 
 ### Fixed

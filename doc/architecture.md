@@ -84,6 +84,7 @@ C4Context
 | Goldmark for Markdown rendering | CommonMark-compliant, actively maintained | [ADR-004](adr/004-goldmark.md) |
 | Folder-per-person data structure | Co-locates metadata, biography, and assets | [ADR-006](adr/006-folder-per-person.md) |
 | Static site export as ZIP | Single-request export, works offline via `file://` | [ADR-009](adr/009-static-export.md) |
+| Client-side i18n | `data-i18n` attributes + JS translation layer, same pattern as theming | [ADR-010](adr/010-client-side-i18n.md) |
 
 ---
 
@@ -97,7 +98,7 @@ block-beta
 
     block:frontend["Frontend (Browser)"]:3
         templates["HTML Templates\n(index.html, person.html)"]
-        js["tree.js\n(D3 + custom layout)"]
+        js["tree.js + theme.js + i18n.js"]
         css["style.css"]
     end
 

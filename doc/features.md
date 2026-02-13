@@ -56,6 +56,17 @@ Theme selector dropdowns appear in the header on all pages. Selection is persist
 
 Theme switching works fully in the exported site since it is implemented entirely in client-side CSS and JavaScript. D3.js is loaded from CDN, so an internet connection is required for the tree visualization.
 
+### Localisation (i18n)
+
+The UI supports multiple languages. Currently available: **English** (default) and **German**.
+
+- All UI labels (navigation, buttons, headings, form labels) are translatable via `data-i18n` attributes.
+- Language is selected from the ellipsis menu on server pages, or from the header on exported pages.
+- Selection is persisted in `localStorage` and survives page reloads and navigation.
+- Markdown biography content and person names remain in their authored language.
+- The static site export includes the i18n script; whichever language is active at export time is applied.
+- Adding a new language requires adding a translation map in `static/js/i18n.js` and a new `<option>` in each template's language selector.
+
 ### JSON API
 
 `GET /api/tree` returns all people as JSON, consumed by the frontend.

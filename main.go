@@ -274,7 +274,7 @@ func handleExport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. Copy static assets
-	for _, sf := range []string{"static/css/style.css", "static/js/theme.js", "static/js/tree.js"} {
+	for _, sf := range []string{"static/css/style.css", "static/js/theme.js", "static/js/i18n.js", "static/js/tree.js"} {
 		content, err := os.ReadFile(sf)
 		if err != nil {
 			continue

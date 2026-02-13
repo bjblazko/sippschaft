@@ -7,27 +7,41 @@
     <title>{{.Person.Name}} - Sippschaft</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/i18n.js"></script>
 </head>
 
 <body>
     <header>
         <nav>
-            <a href="/">&larr; Back to Tree</a>
+            <a href="/" data-i18n="nav.back">&larr; Back to Tree</a>
         </nav>
         <div class="theme-selector">
             <select id="theme-style">
-                <option value="classic">Classic</option>
-                <option value="modern">Modern</option>
-                <option value="neon">Neon</option>
-                <option value="home-computer">Home Computer</option>
+                <option value="classic" data-i18n="theme.classic">Classic</option>
+                <option value="modern" data-i18n="theme.modern">Modern</option>
+                <option value="neon" data-i18n="theme.neon">Neon</option>
+                <option value="home-computer" data-i18n="theme.homeComputer">Home Computer</option>
             </select>
             <select id="theme-mode">
-                <option value="auto">Auto</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
+                <option value="auto" data-i18n="mode.auto">Auto</option>
+                <option value="light" data-i18n="mode.light">Light</option>
+                <option value="dark" data-i18n="mode.dark">Dark</option>
             </select>
         </div>
-        <a href="/export" class="export-btn" title="Download as static site">Export</a>
+        <div class="header-menu">
+            <button class="header-menu-toggle" title="Menu" aria-label="Menu">&#8942;</button>
+            <div class="header-menu-dropdown">
+                <a href="/export" class="header-menu-item" data-i18n="menu.export">Export as static site</a>
+                <hr class="header-menu-separator">
+                <div class="header-menu-group">
+                    <span class="header-menu-label" data-i18n="menu.language">Language</span>
+                    <select id="lang-select">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </header>
     <main class="profile-container">
         <article class="profile-card">
@@ -39,30 +53,30 @@
             <h1>{{.Person.Name}}</h1>
             <div class="meta-info">
                 <div class="meta-item">
-                    <span class="label">Born:</span>
+                    <span class="label" data-i18n="person.born">Born:</span>
                     <span class="value">{{.Person.Birth}}</span>
                 </div>
                 {{if .Person.Death}}
                 <div class="meta-item">
-                    <span class="label">Died:</span>
+                    <span class="label" data-i18n="person.died">Died:</span>
                     <span class="value">{{.Person.Death}}</span>
                 </div>
                 {{end}}
                 <div class="meta-item">
-                    <span class="label">Sex:</span>
+                    <span class="label" data-i18n="person.sex">Sex:</span>
                     <span class="value">{{.Person.Sex}}</span>
                 </div>
             </div>
 
             {{if .Person.Names}}
             <div class="name-history">
-                <h3>Names</h3>
+                <h3 data-i18n="person.names">Names</h3>
                 <ul>
                     {{range .Person.Names}}
                     <li>
                         <span class="name-entry">{{.Name}}</span>
                         {{if .Type}}<span class="name-type">({{.Type}})</span>{{end}}
-                        {{if .Since}}<span class="name-since">— since {{.Since}}</span>{{end}}
+                        {{if .Since}}<span class="name-since">&mdash; <span data-i18n="person.since">since</span> {{.Since}}</span>{{end}}
                     </li>
                     {{end}}
                 </ul>
@@ -71,7 +85,7 @@
 
             {{if .Person.Nicknames}}
             <div class="nicknames">
-                <h3>Also known as</h3>
+                <h3 data-i18n="person.aka">Also known as</h3>
                 <ul>
                     {{range .Person.Nicknames}}
                     <li>{{.}}</li>
@@ -87,7 +101,7 @@
             <div class="relationships">
                 {{if .Person.Parents}}
                 <div class="rel-group">
-                    <h3>Parents</h3>
+                    <h3 data-i18n="person.parents">Parents</h3>
                     <ul>
                         {{range .Person.Parents}}
                         <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>
@@ -98,7 +112,7 @@
 
                 {{if .Person.Spouses}}
                 <div class="rel-group">
-                    <h3>Spouses</h3>
+                    <h3 data-i18n="person.spouses">Spouses</h3>
                     <ul>
                         {{range .Person.Spouses}}
                         <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>
@@ -109,7 +123,7 @@
 
                 {{if .Person.Children}}
                 <div class="rel-group">
-                    <h3>Children</h3>
+                    <h3 data-i18n="person.children">Children</h3>
                     <ul>
                         {{range .Person.Children}}
                         <li><a href="/person/{{.}}">{{index $.Names .}}</a></li>

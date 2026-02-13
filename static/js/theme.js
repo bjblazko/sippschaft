@@ -49,7 +49,7 @@
         if (getStoredMode() === 'auto') apply();
     });
 
-    // Wire up selectors once DOM is ready
+    // Wire up selectors and header menu once DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
         var styleSelect = document.getElementById('theme-style');
         var modeSelect = document.getElementById('theme-mode');
@@ -60,6 +60,22 @@
         if (modeSelect) {
             modeSelect.value = getStoredMode();
             modeSelect.addEventListener('change', function () { setMode(this.value); });
+        }
+
+        // Header menu toggle
+        var menuToggle = document.querySelector('.header-menu-toggle');
+        var menuDropdown = document.querySelector('.header-menu-dropdown');
+        if (menuToggle && menuDropdown) {
+            menuToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menuDropdown.classList.toggle('open');
+            });
+            menuDropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+            document.addEventListener('click', function () {
+                menuDropdown.classList.remove('open');
+            });
         }
     });
 })();
