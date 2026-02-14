@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Localisation support: English and German, switchable via language selector in the ellipsis menu (ADR-010)
+- Localisation support: English, German, French, Spanish, and Italian, switchable via language selector in the ellipsis menu (ADR-010)
 - Language preference persisted in `localStorage`, applied on all pages including static export
 - Ellipsis menu (⋮) in the header containing export and language controls
 - Static site export: `GET /export` returns a ZIP archive containing the complete family tree as a self-contained static site (ADR-009)
@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Home Computer theme (1980s home computer aesthetic): light mode inspired by Amiga Workbench (blue/orange/gray with rainbow stripes), dark mode inspired by C64 (purple/blue with light blue text); both with beveled 3D buttons, hard pixel shadows, and zero border-radius
 - Drop shadows on SVG tree nodes (classic view rectangles, force view circles) via SVG `feDropShadow` filter
 - Drop shadow on header bar and profile cards via CSS `box-shadow` custom properties
-- Configurable data directory via `--data` flag or `DATA` environment variable (defaults to `./data`)
+- Configurable data directory via `--data` flag or `SIPPSCHAFT_DATA` environment variable (defaults to `./data`)
 - Automatic data directory polling every 2 seconds for hot reload without restart
 - Screenshots in README (tree view, node view, person profile)
 - 16 additional avatar photos for family members
