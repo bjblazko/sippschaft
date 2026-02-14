@@ -308,9 +308,28 @@ function renderForceTree(peopleMap) {
     });
 }
 
+function measureTextWidth(text, fontSize, fontWeight) {
+    const svg = d3.select("body").append("svg").style("position", "absolute").style("visibility", "hidden");
+    const t = svg.append("text").text(text).style("font-size", fontSize).style("font-weight", fontWeight);
+    const w = t.node().getComputedTextLength();
+    svg.remove();
+    return w;
+}
+
 function renderClassicTree(peopleMap) {
     const { width, height } = getContainerSize();
-    const NODE_W = 210, NODE_H = 60, H_GAP = 40, V_GAP = 80, SPOUSE_GAP = 20;
+
+    // Compute node width from the longest name
+    let maxNameW = 0;
+    Object.values(peopleMap).forEach(p => {
+        const label = p.name + " " + getGenderSymbol(p.sex);
+        const w = measureTextWidth(label, "14px", "bold");
+        if (w > maxNameW) maxNameW = w;
+    });
+    const hasPhotos = Object.values(peopleMap).some(p => p.photo);
+    const padding = hasPhotos ? 65 + 15 : 30; // text offset + right margin
+    const NODE_W = Math.max(210, Math.ceil(maxNameW + padding));
+    const NODE_H = 60, H_GAP = 40, V_GAP = 80, SPOUSE_GAP = 20;
 
     // === LAYOUT: Custom genealogy tree algorithm ===
 
