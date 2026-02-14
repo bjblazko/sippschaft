@@ -2,9 +2,10 @@ package parser
 
 import (
 	"fmt"
-	"sippschaft/model"
 	"os"
 	"path/filepath"
+	"sippschaft/model"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -24,6 +25,9 @@ func LoadPeople(dataDir string) (map[string]*model.Person, error) {
 		}
 
 		folderName := entry.Name()
+		if strings.HasPrefix(folderName, ".") {
+			continue
+		}
 		folderPath := filepath.Join(dataDir, folderName)
 
 		p, err := loadPerson(folderPath, folderName)
