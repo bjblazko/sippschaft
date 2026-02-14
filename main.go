@@ -33,14 +33,22 @@ var (
 func main() {
 	var err error
 
-	// Parse --data flag, fall back to DATA env var, default to "data"
+	// Parse flags, fall back to env vars, then defaults
+	var port string
 	flag.StringVar(&dataDir, "data", "", "path to the data directory (default: ./data)")
+	flag.StringVar(&port, "port", "", "port to listen on (default: 8080)")
 	flag.Parse()
 	if dataDir == "" {
-		dataDir = os.Getenv("DATA")
+		dataDir = os.Getenv("SIPPSCHAFT_DATA")
 	}
 	if dataDir == "" {
 		dataDir = "data"
+	}
+	if port == "" {
+		port = os.Getenv("SIPPSCHAFT_PORT")
+	}
+	if port == "" {
+		port = "8080"
 	}
 
 	// Load data initially
@@ -72,8 +80,8 @@ func main() {
 	mux.HandleFunc("/person/", handlePerson)
 
 	log.Printf("Data directory: %s", dataDir)
-	log.Println("Server starting on :8080...")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	log.Printf("Server starting on :%s...", port)
+	if err := http.ListenAndServe(":"+port, mux); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

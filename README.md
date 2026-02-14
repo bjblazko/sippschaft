@@ -67,10 +67,22 @@ By default the app reads family data from the `data/` directory. To use a differ
 go run main.go --data /path/to/my/family
 ```
 
-Or set the `DATA` environment variable:
+Or set the `SIPPSCHAFT_DATA` environment variable:
 
 ```
-DATA=/path/to/my/family go run main.go
+SIPPSCHAFT_DATA=/path/to/my/family go run main.go
+```
+
+To listen on a different port (default is 8080):
+
+```
+go run main.go --port 3000
+```
+
+Or set the `SIPPSCHAFT_PORT` environment variable:
+
+```
+SIPPSCHAFT_PORT=3000 go run main.go
 ```
 
 ## Exporting as Static Site

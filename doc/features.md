@@ -58,7 +58,7 @@ Theme switching works fully in the exported site since it is implemented entirel
 
 ### Localisation (i18n)
 
-The UI supports multiple languages. Currently available: **English** (default) and **German**.
+The UI supports multiple languages. Currently available: **English** (default), **German**, **French**, **Spanish**, and **Italian**.
 
 - All UI labels (navigation, buttons, headings, form labels) are translatable via `data-i18n` attributes.
 - Language is selected from the ellipsis menu on server pages, or from the header on exported pages.
@@ -98,9 +98,9 @@ Items below are gaps or natural next steps identified from the current codebase.
 
 ### Infrastructure
 
-- [x] **Configurable data directory** -- Use `--data` flag or `DATA` environment variable to point to a different data folder. Defaults to `./data`.
+- [x] **Configurable data directory** -- Use `--data` flag or `SIPPSCHAFT_DATA` environment variable to point to a different data folder. Defaults to `./data`.
 - [x] **Hot reload without restart** -- The server polls the data directory every 2 seconds and automatically reloads when files change.
-- [ ] **Configurable port** -- Port 8080 is hardcoded.
+- [x] **Configurable port** -- Use `--port` flag or `SIPPSCHAFT_PORT` environment variable. Defaults to `8080`.
 - [x] **Static site export** -- `GET /export` downloads a ZIP with the complete tree as static HTML/JS/CSS. Works via `file://` or any static host.
 - [ ] **Tests** -- No test files exist in the project.
 - [ ] **Docker support** -- No Dockerfile for containerized deployment.

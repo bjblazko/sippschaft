@@ -189,7 +189,7 @@ sequenceDiagram
     Main->>Main: Store in global `people` map
     Main->>Templates: ParseGlob("templates/*.html")
     Templates-->>Main: compiled templates
-    Main->>Main: ListenAndServe(:8080)
+    Main->>Main: ListenAndServe(:port)
 ```
 
 ### Scenario 2: Homepage Tree Rendering
@@ -306,6 +306,6 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 | R3 | CDN dependency | Low | D3.js is loaded from an external CDN. The app will not render the tree without internet access. Could be mitigated by vendoring. |
 | R4 | Unidirectional relationships | Medium | If Alice lists Bob as a child, Bob does not automatically list Alice as a parent. Both sides must be manually maintained, which is error-prone. |
 | R5 | No hot reload of data | Low | Person data is loaded once at startup. File changes require a server restart. Mitigated by using `air` during development. |
-| R6 | Hardcoded port | Low | Port 8080 is hardcoded in `main.go`. Not configurable via environment variable or flag. |
+| ~~R6~~ | ~~Hardcoded port~~ | ~~Low~~ | ~~Resolved: Port is now configurable via `--port` flag or `SIPPSCHAFT_PORT` env var (default 8080).~~ |
 | R7 | ~~Dagre unmaintained~~ | ~~Low~~ | ~~Resolved: Dagre replaced with custom genealogy layout algorithm.~~ |
 | R8 | Raw HTML injection | Low | Biography Markdown is rendered to HTML and inserted via `template.HTML` (unescaped). Safe as long as data files are author-controlled, but becomes a risk if user-submitted content is ever allowed. |
