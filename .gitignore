@@ -1,5 +1,6 @@
 # Go binary
 genealogy-app
+sippschaft
 tmp/
 *.exe
 *.exe~
