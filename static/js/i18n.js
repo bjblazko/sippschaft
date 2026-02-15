@@ -14,6 +14,8 @@
             'mode.light': 'Light',
             'mode.dark': 'Dark',
             'menu.export': 'Export as static site',
+            'menu.theme': 'Theme',
+            'menu.mode': 'Mode',
             'menu.language': 'Language',
             'person.born': 'Born:',
             'person.died': 'Died:',
@@ -23,7 +25,12 @@
             'person.since': 'since',
             'person.parents': 'Parents',
             'person.spouses': 'Spouses',
-            'person.children': 'Children'
+            'person.children': 'Children',
+            'bloodline.focus': 'Focus bloodline',
+            'bloodline.showAll': 'Show all',
+            'help.pan': 'Pan',
+            'help.zoom': 'Zoom',
+            'help.ancestors': 'Ancestors'
         },
         de: {
             'nav.back': '\u2190 Zur\u00fcck zum Stammbaum',
@@ -37,6 +44,8 @@
             'mode.light': 'Hell',
             'mode.dark': 'Dunkel',
             'menu.export': 'Als statische Seite exportieren',
+            'menu.theme': 'Thema',
+            'menu.mode': 'Modus',
             'menu.language': 'Sprache',
             'person.born': 'Geboren:',
             'person.died': 'Gestorben:',
@@ -46,7 +55,12 @@
             'person.since': 'seit',
             'person.parents': 'Eltern',
             'person.spouses': 'Ehepartner',
-            'person.children': 'Kinder'
+            'person.children': 'Kinder',
+            'bloodline.focus': 'Blutlinie anzeigen',
+            'bloodline.showAll': 'Alle anzeigen',
+            'help.pan': 'Bewegen',
+            'help.zoom': 'Zoom',
+            'help.ancestors': 'Vorfahren'
         },
         fr: {
             'nav.back': '\u2190 Retour \u00e0 l\u2019arbre',
@@ -60,6 +74,8 @@
             'mode.light': 'Clair',
             'mode.dark': 'Sombre',
             'menu.export': 'Exporter en site statique',
+            'menu.theme': 'Th\u00e8me',
+            'menu.mode': 'Mode',
             'menu.language': 'Langue',
             'person.born': 'N\u00e9(e) :',
             'person.died': 'D\u00e9c\u00e9d\u00e9(e) :',
@@ -69,7 +85,12 @@
             'person.since': 'depuis',
             'person.parents': 'Parents',
             'person.spouses': 'Conjoints',
-            'person.children': 'Enfants'
+            'person.children': 'Enfants',
+            'bloodline.focus': 'Afficher la lign\u00e9e',
+            'bloodline.showAll': 'Afficher tout',
+            'help.pan': 'D\u00e9placer',
+            'help.zoom': 'Zoom',
+            'help.ancestors': 'Anc\u00eatres'
         },
         es: {
             'nav.back': '\u2190 Volver al \u00e1rbol',
@@ -83,6 +104,8 @@
             'mode.light': 'Claro',
             'mode.dark': 'Oscuro',
             'menu.export': 'Exportar como sitio est\u00e1tico',
+            'menu.theme': 'Tema',
+            'menu.mode': 'Modo',
             'menu.language': 'Idioma',
             'person.born': 'Nacimiento:',
             'person.died': 'Fallecimiento:',
@@ -92,7 +115,12 @@
             'person.since': 'desde',
             'person.parents': 'Padres',
             'person.spouses': 'C\u00f3nyuges',
-            'person.children': 'Hijos'
+            'person.children': 'Hijos',
+            'bloodline.focus': 'Mostrar linaje',
+            'bloodline.showAll': 'Mostrar todos',
+            'help.pan': 'Mover',
+            'help.zoom': 'Zoom',
+            'help.ancestors': 'Ancestros'
         },
         it: {
             'nav.back': '\u2190 Torna all\u2019albero',
@@ -106,6 +134,8 @@
             'mode.light': 'Chiaro',
             'mode.dark': 'Scuro',
             'menu.export': 'Esporta come sito statico',
+            'menu.theme': 'Tema',
+            'menu.mode': 'Modalit\u00e0',
             'menu.language': 'Lingua',
             'person.born': 'Nascita:',
             'person.died': 'Decesso:',
@@ -115,7 +145,12 @@
             'person.since': 'dal',
             'person.parents': 'Genitori',
             'person.spouses': 'Coniugi',
-            'person.children': 'Figli'
+            'person.children': 'Figli',
+            'bloodline.focus': 'Mostra lignaggio',
+            'bloodline.showAll': 'Mostra tutti',
+            'help.pan': 'Spostare',
+            'help.zoom': 'Zoom',
+            'help.ancestors': 'Antenati'
         }
     };
 
@@ -133,6 +168,9 @@
         var lang = getLang();
         var map = translations[lang] || translations.en;
         document.documentElement.lang = lang;
+
+        // Expose translations for dynamic elements (e.g. bloodline bar)
+        window.__sippschaft_i18n = map;
 
         var els = document.querySelectorAll('[data-i18n]');
         for (var i = 0; i < els.length; i++) {

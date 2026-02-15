@@ -4,13 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.3.0] - 2026-02-15
 
 ### Added
 
+- Help overlay on tree page: a frosted-glass overlay in the bottom-left corner shows platform-specific controls (drag to pan, scroll/pinch to zoom, double-click/long-press for ancestors) with platform-specific icons; detects mobile, Mac, and Windows/Linux; dismissible per page load; theme-aware (neon glow, home-computer beveled borders); translatable in all 5 languages
+- Bloodline focus mode: after highlighting ancestors (double-click or long-press), a floating action bar offers "Focus bloodline" to re-render the tree with only the selected person's lineage (ancestors, descendants, siblings, and their partners); "Show all" restores the full tree; persists across view switches
+- Long-press (touch) support on tree nodes for mobile devices, triggering the same ancestor highlight as double-click on desktop
+- Ancestor highlight: double-click a person in either tree view to highlight their direct ancestors (parents, grandparents, etc.) while greying out everyone else; press Escape or double-click empty space to clear
 - Localisation support: English, German, French, Spanish, and Italian, switchable via language selector in the ellipsis menu (ADR-010)
 - Language preference persisted in `localStorage`, applied on all pages including static export
-- Ellipsis menu (⋮) in the header containing export and language controls
+- Ellipsis menu (⋮) in the header containing theme, mode, language, and export controls
 - Static site export: `GET /export` returns a ZIP archive containing the complete family tree as a self-contained static site (ADR-009)
 - Tree page in export uses inline JSON data instead of API fetch, enabling `file://` usage without a server
 - Configurable port via `--port` flag or `SIPPSCHAFT_PORT` environment variable (defaults to 8080)
@@ -25,12 +29,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - Satellite families (in-law ancestors) placed to the right of the main tree to prevent overlaps
   - Color-coded family connection lines using golden-angle HSL spacing with staggered bar heights for overlapping families
 - Tree node width auto-sized to fit the longest person name
+- Default theme changed from Classic/Auto to Neon/Light
+- Theme and mode selectors moved from header bar into the ellipsis menu alongside language
+- D3.js v7 vendored locally (`static/js/d3.v7.min.js`) instead of loaded from CDN; app is now fully offline-capable
 
 ### Fixed
 
 - Person profile relationship links now show display names instead of raw folder IDs
 - Satellite roots (in-law ancestors) now correctly find their bridge person via data children links instead of spanning tree assignments
 - Hidden directories in the data folder are now skipped during person loading
+
+### Removed
+
+- External CDN dependency on `d3js.org`; D3.js is now bundled locally
 
 ## [0.2.0] - 2026-02-13
 

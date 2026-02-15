@@ -4,11 +4,11 @@
     const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
 
     function getStoredStyle() {
-        return localStorage.getItem(STYLE_KEY) || 'classic';
+        return localStorage.getItem(STYLE_KEY) || 'neon';
     }
 
     function getStoredMode() {
-        return localStorage.getItem(MODE_KEY) || 'auto';
+        return localStorage.getItem(MODE_KEY) || 'light';
     }
 
     function resolveMode(mode) {

@@ -14,7 +14,7 @@ Add a `GET /export` endpoint that streams a ZIP archive containing the complete 
 
 - **`index.html`** -- Tree page with family data embedded as inline JSON in a `<script>` tag (`window.__SIPPSCHAFT_DATA__`), eliminating the API fetch.
 - **`person/{id}.html`** -- Pre-rendered profile page for each person, with biography already converted from Markdown to HTML.
-- **`static/css/style.css`**, **`static/js/theme.js`**, **`static/js/tree.js`** -- Client-side assets copied verbatim.
+- **`static/css/style.css`**, **`static/js/theme.js`**, **`static/js/i18n.js`**, **`static/js/tree.js`**, **`static/js/d3.v7.min.js`** -- Client-side assets copied verbatim.
 - **`data/{id}/avatar.*`** -- Avatar photos and other media files (YAML and Markdown source files are excluded).
 
 All paths in the export use relative references (`static/...` from index, `../static/...` from person pages) so the site works without a web server.
@@ -27,6 +27,6 @@ Separate export templates (`export-index.html`, `export-person.html`) are used t
 
 - The export is a single HTTP request producing a downloadable ZIP -- no build tools or CLI needed.
 - Theme switching works fully in the export since it is pure client-side CSS/JS.
-- D3.js is still loaded from CDN, so an internet connection is required for the tree visualization in the exported site.
+- D3.js is vendored locally and included in the export, so the exported site is fully offline-capable.
 - The export is a snapshot; it does not update when data changes. Users must re-export after edits.
 - Export templates must be kept in sync with the server templates when UI changes are made.

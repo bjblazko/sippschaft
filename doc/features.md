@@ -9,7 +9,7 @@ Two visualization modes on the main page:
 - **Classic View** -- Hierarchical tree layout using a seven-phase Sugiyama-style layered graph algorithm (see [ADR-011](adr/011-sugiyama-layout.md) for full details). A BFS traversal through all relationship types (parents, children, spouses, co-parents) assigns generations, ensuring all couples and in-law families are on the same row. Partner groups are collected transitively (A-B-C chains treated as one atomic unit). The layout handles multi-family trees by building a spanning tree via BFS, computing block widths bottom-up, and assigning positions top-down. Satellite families (in-law ancestors) are placed to the right of the main tree to prevent overlaps. Crossing minimization uses weighted barycenter heuristic with alternating top-down/bottom-up passes, adjacent swap optimization with sibling proximity tiebreaker, and Hamiltonian path ordering for multi-partner blocks (hub person placed in the middle). Family connection lines are color-coded so each parent pair has a unique color (golden-angle HSL spacing), with staggered bar heights when multiple families connect between the same generations. Nodes show name, gender symbol, birth/death years, and optional photo.
 - **Force View** -- Physics-based D3 force simulation. Nodes can be dragged freely. Parent-child links are solid lines; spouse links are dashed red lines.
 
-Both views support zoom and pan via mouse/trackpad.
+Both views support zoom and pan via mouse/trackpad. **Ancestor highlight:** double-click a person (or long-press on mobile) to highlight their direct ancestors (parents, grandparents, etc.) while greying out everyone else. A floating action bar appears at the bottom with a "Focus bloodline" button. Press Escape or double-click empty space to clear. **Bloodline focus mode:** clicking "Focus bloodline" re-renders the tree with only the selected person's bloodline -- ancestors, descendants, siblings at every generation, and their partners -- producing a clean, compact lineage view. A "Show all" button restores the full tree. The bloodline focus persists across view switches. **Help overlay:** a small frosted-glass overlay in the bottom-left corner shows platform-specific controls with icons (pan, zoom, ancestor highlight). On Mac it shows "Scroll / Pinch" for zoom; on mobile it shows "Pinch" and "Long-press". The overlay is dismissible per page load via the close button. It adapts to all themes (neon glow border, home-computer beveled borders).
 
 ### Person Profiles
 
@@ -43,7 +43,7 @@ The Neon theme features monospace typography, glowing neon borders and text shad
 
 The Home Computer theme recreates the look of 1980s home computers. Light mode is inspired by the Amiga Workbench (blue background, gray windows, orange accents, rainbow stripes). Dark mode is inspired by the C64 (purple-blue background with light blue text). Both use beveled 3D buttons, hard pixel shadows, monospace font, and sharp corners.
 
-Theme selector dropdowns appear in the header on all pages. Selection is persisted in `localStorage` and survives page reloads and navigation.
+Theme and mode selectors are accessible from the ellipsis menu (⋮) in the header on all pages. The default theme is Neon Light. Selection is persisted in `localStorage` and survives page reloads and navigation.
 
 ### Static Site Export
 
@@ -54,14 +54,14 @@ Theme selector dropdowns appear in the header on all pages. Selection is persist
 - All static assets (CSS, JS) and avatar photos
 - All paths are relative, so the site works when opened via `file://` or deployed to any static hosting
 
-Theme switching works fully in the exported site since it is implemented entirely in client-side CSS and JavaScript. D3.js is loaded from CDN, so an internet connection is required for the tree visualization.
+Theme switching works fully in the exported site since it is implemented entirely in client-side CSS and JavaScript. D3.js is bundled locally, so the exported site is fully offline-capable.
 
 ### Localisation (i18n)
 
 The UI supports multiple languages. Currently available: **English** (default), **German**, **French**, **Spanish**, and **Italian**.
 
 - All UI labels (navigation, buttons, headings, form labels) are translatable via `data-i18n` attributes.
-- Language is selected from the ellipsis menu on server pages, or from the header on exported pages.
+- Language is selected from the ellipsis menu (⋮) in the header on all pages (server and export).
 - Selection is persisted in `localStorage` and survives page reloads and navigation.
 - Markdown biography content and person names remain in their authored language.
 - The static site export includes the i18n script; whichever language is active at export time is applied.
@@ -87,7 +87,7 @@ Items below are gaps or natural next steps identified from the current codebase.
 ### Visualization
 
 - [ ] **Zoom-to-fit** -- Auto-fit the tree to the viewport on initial load, especially for large trees.
-- [ ] **Highlight path** -- Click a person and highlight the ancestry path to a selected root.
+- [x] **Highlight path** -- Double-click a person to highlight their direct ancestor chain. Press Escape or double-click empty space to clear.
 - [ ] **Responsive layout** -- The tree container has a fixed 600px height. Mobile support is limited.
 
 ### Person Profile

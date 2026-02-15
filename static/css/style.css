@@ -454,13 +454,15 @@
 }
 
 /* Neon buttons glow */
-[data-theme-style="neon"] #controls button {
+[data-theme-style="neon"] #controls button,
+[data-theme-style="neon"] .header-menu-toggle {
     transition: box-shadow 0.2s ease, background 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-[data-theme-style="neon"] #controls button:hover {
+[data-theme-style="neon"] #controls button:hover,
+[data-theme-style="neon"] .header-menu-toggle:hover {
     box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
 }
 
@@ -469,14 +471,14 @@
 }
 
 /* Neon select dropdowns */
-[data-theme-style="neon"] .theme-selector select {
+[data-theme-style="neon"] .header-menu-group select {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     transition: box-shadow 0.2s ease;
 }
 
-[data-theme-style="neon"] .theme-selector select:hover,
-[data-theme-style="neon"] .theme-selector select:focus {
+[data-theme-style="neon"] .header-menu-group select:hover,
+[data-theme-style="neon"] .header-menu-group select:focus {
     box-shadow: 0 0 8px var(--accent-color);
 }
 
@@ -600,14 +602,16 @@
 }
 
 /* Home Computer buttons: beveled 3D look */
-[data-theme-style="home-computer"] #controls button {
+[data-theme-style="home-computer"] #controls button,
+[data-theme-style="home-computer"] .header-menu-toggle {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border: 2px solid;
     border-color: #ffffff #555555 #555555 #ffffff;
 }
 
-[data-theme-style="home-computer"] #controls button:active {
+[data-theme-style="home-computer"] #controls button:active,
+[data-theme-style="home-computer"] .header-menu-toggle:active {
     border-color: #555555 #ffffff #ffffff #555555;
 }
 
@@ -616,7 +620,7 @@
 }
 
 /* Home Computer selects */
-[data-theme-style="home-computer"] .theme-selector select {
+[data-theme-style="home-computer"] .header-menu-group select {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border: 2px solid;
@@ -734,31 +738,6 @@ main:has(#tree-container) {
 }
 
 /* ==========================================================
-   Theme selector (in header)
-   ========================================================== */
-.theme-selector {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.theme-selector select {
-    background: var(--select-bg);
-    color: var(--select-text);
-    border: 1px solid var(--select-border);
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    outline: none;
-}
-
-.theme-selector select option {
-    background: var(--card-bg);
-    color: var(--text-color);
-}
-
-/* ==========================================================
    Header menu (ellipsis dropdown)
    ========================================================== */
 .header-menu {
@@ -770,10 +749,11 @@ main:has(#tree-container) {
     color: var(--select-text);
     border: 1px solid var(--select-border);
     border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 1.3rem;
+    padding: 4px 10px;
+    font-size: 1.1rem;
     line-height: 1;
     cursor: pointer;
+    font-family: var(--font-family);
 }
 
 .header-menu-toggle:hover {
@@ -983,6 +963,182 @@ main:has(#tree-container) {
 }
 
 /* ==========================================================
+   Bloodline focus floating bar
+   ========================================================== */
+#bloodline-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 16px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 50;
+    font-size: 0.9rem;
+    font-family: var(--font-family);
+    max-width: calc(100vw - 2rem);
+}
+
+#bloodline-bar button {
+    padding: 4px 12px;
+    cursor: pointer;
+    background: var(--select-bg);
+    color: var(--select-text);
+    border: 1px solid var(--select-border);
+    border-radius: 4px;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+#bloodline-bar button:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Neon theme: glow on bloodline bar */
+[data-theme-style="neon"] #bloodline-bar {
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 15px var(--shadow-color), 0 0 30px var(--shadow-color);
+}
+
+[data-theme-style="neon"] #bloodline-bar button {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: box-shadow 0.2s ease;
+}
+
+[data-theme-style="neon"] #bloodline-bar button:hover {
+    box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
+    background: var(--select-bg);
+}
+
+/* Home Computer theme: beveled borders */
+[data-theme-style="home-computer"] #bloodline-bar {
+    border-radius: 0;
+    border: 2px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+[data-theme-style="home-computer"] #bloodline-bar button {
+    border-radius: 0;
+    border: 2px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+[data-theme-style="home-computer"] #bloodline-bar button:active {
+    border-color: #555555 #ffffff #ffffff #555555;
+}
+
+/* ==========================================================
+   Help overlay (tree page)
+   ========================================================== */
+@keyframes help-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#help-overlay {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--border-radius);
+    padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    color: #e0e0e0;
+    animation: help-fade-in 0.4s ease-out;
+}
+
+.help-close {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 4px;
+}
+
+.help-close:hover {
+    color: #fff;
+}
+
+.help-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2px 0;
+}
+
+.help-icon {
+    font-size: 1rem;
+    width: 1.4rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.help-line kbd {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    color: #fff;
+    min-width: 60px;
+    text-align: center;
+}
+
+.help-line span {
+    color: #ccc;
+}
+
+/* Neon theme: glow border on help overlay */
+[data-theme-style="neon"] #help-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 12px var(--shadow-color), 0 0 24px var(--shadow-color);
+}
+
+[data-theme-style="neon"] .help-line kbd {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    text-shadow: 0 0 4px var(--accent-color);
+}
+
+/* Home Computer theme: beveled borders, no radius */
+[data-theme-style="home-computer"] #help-overlay {
+    border-radius: 0;
+    border: 2px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+[data-theme-style="home-computer"] .help-line kbd {
+    border-radius: 0;
+    border: 1px solid;
+    border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+/* ==========================================================
    Responsive / mobile
    ========================================================== */
 @media (max-width: 768px) {
@@ -998,10 +1154,6 @@ main:has(#tree-container) {
 
     #controls {
         order: 10;
-    }
-
-    .theme-selector {
-        order: 11;
     }
 
     .header-menu {
@@ -1049,12 +1201,31 @@ main:has(#tree-container) {
         font-size: 0.75rem;
     }
 
-    .theme-selector select {
-        padding: 3px 4px;
+    .profile-photo img {
+        max-width: 140px;
+    }
+
+    #bloodline-bar {
+        padding: 0.4rem 0.75rem;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    #bloodline-bar button {
+        padding: 3px 8px;
         font-size: 0.75rem;
     }
 
-    .profile-photo img {
-        max-width: 140px;
+    #help-overlay {
+        bottom: 1rem;
+        left: 1rem;
+        font-size: 0.7rem;
+        padding: 0.5rem 1rem 0.5rem 0.6rem;
+    }
+
+    .help-line kbd {
+        font-size: 0.65rem;
+        min-width: 50px;
+        padding: 1px 4px;
     }
 }

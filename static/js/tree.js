@@ -1,5 +1,9 @@
 let currentData = null;
 let currentView = 'classic'; // 'force' or 'classic'
+let highlightedAncestors = null; // Set of ancestor IDs when highlight is active
+let bloodlineFocusPid = null; // person ID when bloodline focus is active
+let bloodlineFocusName = null; // person name for the active bar
+let helpOverlayDismissed = false; // help overlay dismissed for this page load
 
 // In static export mode, links are relative HTML files instead of server routes
 function personUrl(id) {
@@ -42,10 +46,32 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Classic Button NOT found");
     }
 
+    // Escape key clears ancestor highlight and bloodline focus
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            if (bloodlineFocusPid) {
+                bloodlineFocusPid = null;
+                bloodlineFocusName = null;
+                hideBloodlineBar();
+                renderTree();
+                return;
+            }
+            if (highlightedAncestors) {
+                highlightedAncestors = null;
+                hideBloodlineBar();
+                d3.selectAll('#tree-container svg g[data-pid]')
+                    .transition().duration(300).style('opacity', 1);
+                d3.selectAll('#tree-container svg line')
+                    .transition().duration(300).style('opacity', 1);
+            }
+        }
+    });
+
     if (window.__SIPPSCHAFT_DATA__) {
         console.log("Using inline data");
         currentData = window.__SIPPSCHAFT_DATA__;
         renderTree();
+        showHelpOverlay();
     } else {
         fetch('/api/tree')
             .then(response => response.json())
@@ -53,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Data fetched", data);
                 currentData = data;
                 renderTree();
+                showHelpOverlay();
             })
             .catch(error => console.error('Error fetching tree data:', error));
     }
@@ -70,11 +97,18 @@ document.addEventListener("DOMContentLoaded", function () {
 function switchView(view) {
     console.log("Switching view to:", view);
     currentView = view;
+    highlightedAncestors = null;
+    hideBloodlineBar();
     // Update buttons
     document.querySelectorAll('#controls button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(`btn-${view}`).classList.add('active');
 
     renderTree();
+
+    // Re-show the active bar if bloodline focus is still on
+    if (bloodlineFocusPid && bloodlineFocusName) {
+        showBloodlineActiveBar(bloodlineFocusName);
+    }
 }
 
 function renderTree() {
@@ -88,12 +122,19 @@ function renderTree() {
         return;
     }
 
+    // Determine which people map to render
+    let dataToRender = currentData;
+    if (bloodlineFocusPid && currentData[bloodlineFocusPid]) {
+        const bloodlineSet = getBloodline(bloodlineFocusPid, currentData);
+        dataToRender = buildFilteredPeopleMap(bloodlineSet, currentData);
+    }
+
     try {
         if (currentView === 'force') {
-            renderForceTree(currentData);
+            renderForceTree(dataToRender);
         } else {
             console.log("Calling renderClassicTree");
-            renderClassicTree(currentData);
+            renderClassicTree(dataToRender);
         }
     } catch (e) {
         console.error("Error rendering tree:", e);
@@ -109,6 +150,100 @@ function getLifeSpan(p) {
         return `*${bYear} †${getYear(p.death)}`;
     }
     return `*${bYear}`;
+}
+
+// Recursively collect all ancestor IDs (parents, grandparents, etc.) plus the person themselves
+function getAncestors(pid, peopleMap) {
+    const ancestors = new Set();
+    const queue = [pid];
+    while (queue.length > 0) {
+        const current = queue.shift();
+        if (ancestors.has(current)) continue;
+        ancestors.add(current);
+        const person = peopleMap[current];
+        if (person && person.parents) {
+            person.parents.forEach(parentId => {
+                if (peopleMap[parentId] && !ancestors.has(parentId)) {
+                    queue.push(parentId);
+                }
+            });
+        }
+    }
+    return ancestors;
+}
+
+// Recursively collect all descendant IDs (children, grandchildren, etc.) plus the person themselves
+function getDescendants(pid, peopleMap) {
+    const descendants = new Set();
+    const queue = [pid];
+    while (queue.length > 0) {
+        const current = queue.shift();
+        if (descendants.has(current)) continue;
+        descendants.add(current);
+        const person = peopleMap[current];
+        if (person && person.children) {
+            person.children.forEach(childId => {
+                if (peopleMap[childId] && !descendants.has(childId)) {
+                    queue.push(childId);
+                }
+            });
+        }
+    }
+    return descendants;
+}
+
+// Compute the full bloodline set: ancestors + descendants + siblings + partners
+function getBloodline(pid, peopleMap) {
+    const ancestors = getAncestors(pid, peopleMap);
+    const descendants = getDescendants(pid, peopleMap);
+    const core = new Set([...ancestors, ...descendants]);
+
+    const bloodline = new Set(core);
+
+    // Ensure both parents of every core member are included
+    // (ancestors already have parents via getAncestors; this covers
+    // descendants whose other parent is outside the direct line)
+    core.forEach(id => {
+        const person = peopleMap[id];
+        if (person && person.parents) {
+            person.parents.forEach(parentId => {
+                if (peopleMap[parentId]) bloodline.add(parentId);
+            });
+        }
+    });
+
+    // Add siblings of core members (other children of core members' parents).
+    // Siblings are included for context only — their own partners are NOT added.
+    core.forEach(id => {
+        const person = peopleMap[id];
+        if (!person || !person.parents) return;
+        person.parents.forEach(parentId => {
+            const parent = peopleMap[parentId];
+            if (parent && parent.children) {
+                parent.children.forEach(sibId => {
+                    if (peopleMap[sibId]) bloodline.add(sibId);
+                });
+            }
+        });
+    });
+
+    return bloodline;
+}
+
+// Build a filtered people map containing only people in the bloodline set,
+// with relationship arrays trimmed to only include IDs in the set
+function buildFilteredPeopleMap(bloodlineSet, peopleMap) {
+    const filtered = {};
+    bloodlineSet.forEach(pid => {
+        const person = peopleMap[pid];
+        if (!person) return;
+        filtered[pid] = Object.assign({}, person, {
+            parents: (person.parents || []).filter(id => bloodlineSet.has(id)),
+            children: (person.children || []).filter(id => bloodlineSet.has(id)),
+            spouses: (person.spouses || []).filter(id => bloodlineSet.has(id))
+        });
+    });
+    return filtered;
 }
 
 function getGenderSymbol(sex) {
@@ -169,6 +304,206 @@ function getStrokeColor(sex) {
     return cssVar('--unknown-stroke');
 }
 
+
+// i18n helper: look up a translation key, fallback to the key itself
+function t(key) {
+    if (window.__sippschaft_i18n && window.__sippschaft_i18n[key]) {
+        return window.__sippschaft_i18n[key];
+    }
+    // Fallback defaults
+    const fallbacks = {
+        'bloodline.focus': 'Focus bloodline',
+        'bloodline.showAll': 'Show all'
+    };
+    return fallbacks[key] || key;
+}
+
+// Show the floating action bar after ancestor highlight
+function showBloodlineBar(pid, personName) {
+    hideBloodlineBar();
+    const bar = document.createElement('div');
+    bar.id = 'bloodline-bar';
+
+    const label = document.createElement('span');
+    label.textContent = personName;
+    bar.appendChild(label);
+
+    const focusBtn = document.createElement('button');
+    focusBtn.textContent = t('bloodline.focus');
+    focusBtn.setAttribute('data-i18n', 'bloodline.focus');
+    focusBtn.addEventListener('click', () => {
+        bloodlineFocusPid = pid;
+        bloodlineFocusName = personName;
+        highlightedAncestors = null;
+        hideBloodlineBar();
+        renderTree();
+        showBloodlineActiveBar(personName);
+    });
+    bar.appendChild(focusBtn);
+
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = '\u00d7';
+    clearBtn.title = 'Clear';
+    clearBtn.addEventListener('click', () => {
+        highlightedAncestors = null;
+        hideBloodlineBar();
+        // Restore full opacity
+        d3.selectAll('#tree-container svg g[data-pid]')
+            .transition().duration(300).style('opacity', 1);
+        d3.selectAll('#tree-container svg line')
+            .transition().duration(300).style('opacity', 1);
+    });
+    bar.appendChild(clearBtn);
+
+    document.querySelector('main').appendChild(bar);
+}
+
+// Show the active bloodline bar with "Show all" button
+function showBloodlineActiveBar(personName) {
+    hideBloodlineBar();
+    const bar = document.createElement('div');
+    bar.id = 'bloodline-bar';
+
+    const label = document.createElement('span');
+    label.textContent = personName;
+    bar.appendChild(label);
+
+    const showAllBtn = document.createElement('button');
+    showAllBtn.textContent = t('bloodline.showAll');
+    showAllBtn.setAttribute('data-i18n', 'bloodline.showAll');
+    showAllBtn.addEventListener('click', () => {
+        bloodlineFocusPid = null;
+        bloodlineFocusName = null;
+        hideBloodlineBar();
+        renderTree();
+    });
+    bar.appendChild(showAllBtn);
+
+    document.querySelector('main').appendChild(bar);
+}
+
+// Remove the floating bar
+function hideBloodlineBar() {
+    const existing = document.getElementById('bloodline-bar');
+    if (existing) existing.remove();
+}
+
+// Show a dismissible help overlay with platform-specific controls
+function showHelpOverlay() {
+    if (helpOverlayDismissed) return;
+
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || ('ontouchstart' in window);
+    var isMac = !isMobile && /Mac/i.test(navigator.userAgent);
+
+    var iconPan, iconZoom, iconAncestors, gestureZoom, gestureAncestors;
+    if (isMobile) {
+        iconPan = '\u261d';       // pointing finger
+        iconZoom = '\ud83d\udd0d'; // magnifying glass
+        iconAncestors = '\u23f3'; // hourglass (long-press)
+        gestureZoom = 'Pinch';
+        gestureAncestors = 'Long-press';
+    } else if (isMac) {
+        iconPan = '\u270b';        // raised hand
+        iconZoom = '\ud83d\udd0d'; // magnifying glass
+        iconAncestors = '\ud83d\udc65'; // two people silhouette
+        gestureZoom = 'Scroll / Pinch';
+        gestureAncestors = 'Dbl-click';
+    } else {
+        iconPan = '\u270b';        // raised hand
+        iconZoom = '\ud83d\udd0d'; // magnifying glass
+        iconAncestors = '\ud83d\udc65'; // two people silhouette
+        gestureZoom = 'Scroll';
+        gestureAncestors = 'Dbl-click';
+    }
+
+    var lines = [
+        { icon: iconPan, gesture: 'Drag', action: t('help.pan') },
+        { icon: iconZoom, gesture: gestureZoom, action: t('help.zoom') },
+        { icon: iconAncestors, gesture: gestureAncestors, action: t('help.ancestors') }
+    ];
+
+    var overlay = document.createElement('div');
+    overlay.id = 'help-overlay';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'help-close';
+    closeBtn.textContent = '\u00d7';
+    closeBtn.addEventListener('click', function () {
+        overlay.remove();
+        helpOverlayDismissed = true;
+    });
+    overlay.appendChild(closeBtn);
+
+    lines.forEach(function (line) {
+        var row = document.createElement('div');
+        row.className = 'help-line';
+        var iconEl = document.createElement('span');
+        iconEl.className = 'help-icon';
+        iconEl.textContent = line.icon;
+        var kbd = document.createElement('kbd');
+        kbd.textContent = line.gesture;
+        var span = document.createElement('span');
+        span.textContent = line.action;
+        row.appendChild(iconEl);
+        row.appendChild(kbd);
+        row.appendChild(span);
+        overlay.appendChild(row);
+    });
+
+    var main = document.querySelector('main');
+    if (main) main.appendChild(overlay);
+}
+
+// Attach long-press (touch) handlers to a D3 selection of nodes
+function attachLongPress(selection, getPid, getName, peopleMap) {
+    let longPressTimer = null;
+    let touchStartPos = null;
+
+    selection.on('touchstart', function (event) {
+        const touch = event.touches[0];
+        touchStartPos = { x: touch.clientX, y: touch.clientY };
+        const pid = getPid.call(this, event);
+        const name = getName.call(this, event);
+        longPressTimer = setTimeout(() => {
+            longPressTimer = null;
+            event.preventDefault();
+            // Trigger ancestor highlight + show bar
+            highlightedAncestors = getAncestors(pid, peopleMap);
+            d3.selectAll('#tree-container svg g[data-pid]')
+                .transition().duration(300)
+                .style('opacity', function() {
+                    const id = d3.select(this).attr('data-pid');
+                    return highlightedAncestors.has(id) ? 1 : 0.25;
+                });
+            d3.selectAll('#tree-container svg line')
+                .transition().duration(300)
+                .style('opacity', function() {
+                    const pids = d3.select(this).attr('data-pids');
+                    if (!pids) return 0.15;
+                    return pids.split(',').every(id => highlightedAncestors.has(id)) ? 1 : 0.15;
+                });
+            showBloodlineBar(pid, name);
+        }, 500);
+    }, { passive: false });
+
+    selection.on('touchmove', function (event) {
+        if (!longPressTimer || !touchStartPos) return;
+        const touch = event.touches[0];
+        const dx = touch.clientX - touchStartPos.x;
+        const dy = touch.clientY - touchStartPos.y;
+        if (Math.sqrt(dx * dx + dy * dy) > 10) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+    });
+
+    selection.on('touchend', function () {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+    });
+}
 
 function renderForceTree(peopleMap) {
     const { width, height } = getContainerSize();
@@ -234,6 +569,7 @@ function renderForceTree(peopleMap) {
         .selectAll("g")
         .data(nodes)
         .enter().append("g")
+        .attr("data-pid", d => d.id)
         .call(d3.drag()
             .on("start", (event, d) => {
                 if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -292,8 +628,43 @@ function renderForceTree(peopleMap) {
         .style("font-size", "10px")
         .attr("fill", cssVar('--node-subtext'));
 
+    let forceClickTimer = null;
     node.on("click", (event, d) => {
-        window.location.href = personUrl(d.id);
+        if (forceClickTimer) clearTimeout(forceClickTimer);
+        forceClickTimer = setTimeout(() => {
+            window.location.href = personUrl(d.id);
+        }, 300);
+    });
+
+    node.on("dblclick", (event, d) => {
+        if (forceClickTimer) { clearTimeout(forceClickTimer); forceClickTimer = null; }
+        event.stopPropagation();
+        highlightedAncestors = getAncestors(d.id, peopleMap);
+        node.transition().duration(300)
+            .style("opacity", n => highlightedAncestors.has(n.id) ? 1 : 0.25);
+        link.transition().duration(300)
+            .style("opacity", l => {
+                const srcId = typeof l.source === 'object' ? l.source.id : l.source;
+                const tgtId = typeof l.target === 'object' ? l.target.id : l.target;
+                return highlightedAncestors.has(srcId) && highlightedAncestors.has(tgtId) ? 1 : 0.15;
+            });
+        showBloodlineBar(d.id, d.name);
+    });
+
+    // Long-press support for mobile
+    attachLongPress(node,
+        function(event) { return d3.select(this).datum().id; },
+        function(event) { return d3.select(this).datum().name; },
+        peopleMap
+    );
+
+    // Double-click on empty space clears highlight
+    svg.on("dblclick", () => {
+        if (!highlightedAncestors) return;
+        highlightedAncestors = null;
+        hideBloodlineBar();
+        node.transition().duration(300).style("opacity", 1);
+        link.transition().duration(300).style("opacity", 1);
     });
 
     simulation.on("tick", () => {
@@ -1130,6 +1501,17 @@ function renderClassicTree(peopleMap) {
 
     addDropShadowFilter(svg);
 
+    // Double-click on empty space clears highlight
+    svg.on("dblclick", () => {
+        if (!highlightedAncestors) return;
+        highlightedAncestors = null;
+        hideBloodlineBar();
+        inner.selectAll('g[data-pid]')
+            .transition().duration(300).style('opacity', 1);
+        inner.selectAll('line[data-pids]')
+            .transition().duration(300).style('opacity', 1);
+    });
+
     const inner = svg.append("g");
 
     // Center and scale the tree to fit
@@ -1173,6 +1555,7 @@ function renderClassicTree(peopleMap) {
     const genPairBarCounter = {};
     const BAR_STAGGER = 10;
     const drawnFamilies = new Set();
+    const connectedChildren = new Set(); // track children that got connection lines
     Object.values(peopleMap).forEach(person => {
         const { spouseIds, partnerIds } = getAllPartners(person.id);
         partnerIds.forEach(sid => {
@@ -1194,14 +1577,18 @@ function renderClassicTree(peopleMap) {
                     if (positions[child.id]) kids.push(child.id);
                 }
             });
+            kids.forEach(k => connectedChildren.add(k));
 
             const leftPos = posA.x < posB.x ? posA : posB;
             const rightPos = posA.x < posB.x ? posB : posA;
             const coupleY = (leftPos.y + rightPos.y) / 2;
             const junctionX = (posA.x + posB.x) / 2;
 
+            const parentPids = [person.id, sid].join(',');
+
             // Couple line: solid for spouses, dashed for co-parents
             inner.append("line")
+                .attr("data-pids", parentPids)
                 .attr("x1", leftPos.x + NODE_W / 2).attr("y1", coupleY)
                 .attr("x2", rightPos.x - NODE_W / 2).attr("y2", coupleY)
                 .attr("stroke", famColor).attr("stroke-width", 2)
@@ -1209,8 +1596,8 @@ function renderClassicTree(peopleMap) {
 
             // Children connections
             if (kids.length > 0) {
-                const sorted = kids.map(k => positions[k]).sort((a, b) => a.x - b.x);
-                const childTopY = Math.min(...sorted.map(c => c.y - NODE_H / 2));
+                const sortedKids = kids.map(k => ({ id: k, pos: positions[k] })).sort((a, b) => a.pos.x - b.pos.x);
+                const childTopY = Math.min(...sortedKids.map(c => c.pos.y - NODE_H / 2));
                 // Stagger bars from different families between the same generation pair
                 const parentGen = genMap[person.id];
                 const childGen = genMap[kids[0]];
@@ -1221,25 +1608,28 @@ function renderClassicTree(peopleMap) {
 
                 // Vertical from junction to bar
                 inner.append("line")
+                    .attr("data-pids", parentPids)
                     .attr("x1", junctionX).attr("y1", coupleY)
                     .attr("x2", junctionX).attr("y2", barY)
                     .attr("stroke", famColor).attr("stroke-width", 2);
 
                 // Horizontal bar
-                const barL = Math.min(sorted[0].x, junctionX);
-                const barR = Math.max(sorted[sorted.length - 1].x, junctionX);
+                const barL = Math.min(sortedKids[0].pos.x, junctionX);
+                const barR = Math.max(sortedKids[sortedKids.length - 1].pos.x, junctionX);
                 if (barL !== barR) {
                     inner.append("line")
+                        .attr("data-pids", parentPids)
                         .attr("x1", barL).attr("y1", barY)
                         .attr("x2", barR).attr("y2", barY)
                         .attr("stroke", famColor).attr("stroke-width", 2);
                 }
 
                 // Vertical drops to each child
-                sorted.forEach(cpos => {
+                sortedKids.forEach(child => {
                     inner.append("line")
-                        .attr("x1", cpos.x).attr("y1", barY)
-                        .attr("x2", cpos.x).attr("y2", cpos.y - NODE_H / 2)
+                        .attr("data-pids", parentPids + ',' + child.id)
+                        .attr("x1", child.pos.x).attr("y1", barY)
+                        .attr("x2", child.pos.x).attr("y2", child.pos.y - NODE_H / 2)
                         .attr("stroke", famColor).attr("stroke-width", 2);
                 });
             }
@@ -1247,25 +1637,27 @@ function renderClassicTree(peopleMap) {
     });
 
     // --- Draw single-parent connection lines ---
-    // Handle parents who have children but no partner (children with only one known parent)
+    // Handle children not yet connected: true single parents AND children
+    // whose other parent was filtered out (e.g. siblings in bloodline focus)
     Object.values(peopleMap).forEach(person => {
         if (!person.children || person.children.length === 0) return;
-        const { partnerIds } = getAllPartners(person.id);
-        if (partnerIds.length > 0) return; // already handled above
         const parentPos = positions[person.id];
         if (!parentPos) return;
 
-        const kids = person.children.filter(cid => positions[cid]);
+        // Only draw lines for children that weren't already connected above
+        const kids = person.children.filter(cid => positions[cid] && !connectedChildren.has(cid));
         if (kids.length === 0) return;
+
+        kids.forEach(k => connectedChildren.add(k));
 
         const spFamColor = getFamilyColor('single-' + person.id);
 
-        const sorted = kids.map(cid => positions[cid]).sort((a, b) => a.x - b.x);
+        const sortedKids = kids.map(cid => ({ id: cid, pos: positions[cid] })).sort((a, b) => a.pos.x - b.pos.x);
         const parentBottomY = parentPos.y + NODE_H / 2;
-        const childTopY = Math.min(...sorted.map(c => c.y - NODE_H / 2));
+        const childTopY = Math.min(...sortedKids.map(c => c.pos.y - NODE_H / 2));
         // Stagger bars for single-parent families too
         const spParentGen = genMap[person.id];
-        const spChildGen = genMap[person.children.find(cid => positions[cid])];
+        const spChildGen = genMap[kids[0]];
         const spPairKey = spParentGen + '-' + spChildGen;
         if (!genPairBarCounter[spPairKey]) genPairBarCounter[spPairKey] = 0;
         const spStaggerIdx = genPairBarCounter[spPairKey]++;
@@ -1273,39 +1665,73 @@ function renderClassicTree(peopleMap) {
 
         // Vertical from parent bottom to bar
         inner.append("line")
+            .attr("data-pids", person.id)
             .attr("x1", parentPos.x).attr("y1", parentBottomY)
             .attr("x2", parentPos.x).attr("y2", barY)
             .attr("stroke", spFamColor).attr("stroke-width", 2);
 
         // Horizontal bar
-        const barL = Math.min(sorted[0].x, parentPos.x);
-        const barR = Math.max(sorted[sorted.length - 1].x, parentPos.x);
+        const barL = Math.min(sortedKids[0].pos.x, parentPos.x);
+        const barR = Math.max(sortedKids[sortedKids.length - 1].pos.x, parentPos.x);
         if (barL !== barR) {
             inner.append("line")
+                .attr("data-pids", person.id)
                 .attr("x1", barL).attr("y1", barY)
                 .attr("x2", barR).attr("y2", barY)
                 .attr("stroke", spFamColor).attr("stroke-width", 2);
         }
 
         // Vertical drops to each child
-        sorted.forEach(cpos => {
+        sortedKids.forEach(child => {
             inner.append("line")
-                .attr("x1", cpos.x).attr("y1", barY)
-                .attr("x2", cpos.x).attr("y2", cpos.y - NODE_H / 2)
+                .attr("data-pids", person.id + ',' + child.id)
+                .attr("x1", child.pos.x).attr("y1", barY)
+                .attr("x2", child.pos.x).attr("y2", child.pos.y - NODE_H / 2)
                 .attr("stroke", spFamColor).attr("stroke-width", 2);
         });
     });
 
 
     // --- Draw person nodes ---
+    let classicClickTimer = null;
     Object.entries(positions).forEach(([pid, pos]) => {
         const p = peopleMap[pid];
         if (!p) return;
 
         const group = inner.append("g")
+            .attr("data-pid", pid)
             .attr("transform", `translate(${pos.x - NODE_W / 2}, ${pos.y - NODE_H / 2})`)
             .style("cursor", "pointer")
-            .on("click", () => { window.location.href = personUrl(pid); });
+            .on("click", () => {
+                if (classicClickTimer) clearTimeout(classicClickTimer);
+                classicClickTimer = setTimeout(() => {
+                    window.location.href = personUrl(pid);
+                }, 300);
+            })
+            .on("dblclick", (event) => {
+                if (classicClickTimer) { clearTimeout(classicClickTimer); classicClickTimer = null; }
+                event.stopPropagation();
+                highlightedAncestors = getAncestors(pid, peopleMap);
+                inner.selectAll('g[data-pid]')
+                    .transition().duration(300)
+                    .style('opacity', function() {
+                        return highlightedAncestors.has(d3.select(this).attr('data-pid')) ? 1 : 0.25;
+                    });
+                inner.selectAll('line[data-pids]')
+                    .transition().duration(300)
+                    .style('opacity', function() {
+                        const pids = d3.select(this).attr('data-pids').split(',');
+                        return pids.every(id => highlightedAncestors.has(id)) ? 1 : 0.15;
+                    });
+                showBloodlineBar(pid, p.name);
+            });
+
+        // Long-press support for mobile
+        attachLongPress(group,
+            function() { return pid; },
+            function() { return p.name; },
+            peopleMap
+        );
 
         group.append("rect")
             .attr("width", NODE_W)

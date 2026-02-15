@@ -15,25 +15,37 @@
         <nav>
             <a href="../index.html" data-i18n="nav.back">&larr; Back to Tree</a>
         </nav>
-        <div class="theme-selector">
-            <select id="theme-style">
-                <option value="classic" data-i18n="theme.classic">Classic</option>
-                <option value="modern" data-i18n="theme.modern">Modern</option>
-                <option value="neon" data-i18n="theme.neon">Neon</option>
-                <option value="home-computer" data-i18n="theme.homeComputer">Home Computer</option>
-            </select>
-            <select id="theme-mode">
-                <option value="auto" data-i18n="mode.auto">Auto</option>
-                <option value="light" data-i18n="mode.light">Light</option>
-                <option value="dark" data-i18n="mode.dark">Dark</option>
-            </select>
-            <select id="lang-select">
-                <option value="en">English</option>
-                <option value="de">Deutsch</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="it">Italiano</option>
-            </select>
+        <div class="header-menu">
+            <button class="header-menu-toggle" title="Menu" aria-label="Menu">&#8942;</button>
+            <div class="header-menu-dropdown">
+                <div class="header-menu-group">
+                    <span class="header-menu-label" data-i18n="menu.theme">Theme</span>
+                    <select id="theme-style">
+                        <option value="classic" data-i18n="theme.classic">Classic</option>
+                        <option value="modern" data-i18n="theme.modern">Modern</option>
+                        <option value="neon" data-i18n="theme.neon">Neon</option>
+                        <option value="home-computer" data-i18n="theme.homeComputer">Home Computer</option>
+                    </select>
+                </div>
+                <div class="header-menu-group">
+                    <span class="header-menu-label" data-i18n="menu.mode">Mode</span>
+                    <select id="theme-mode">
+                        <option value="auto" data-i18n="mode.auto">Auto</option>
+                        <option value="light" data-i18n="mode.light">Light</option>
+                        <option value="dark" data-i18n="mode.dark">Dark</option>
+                    </select>
+                </div>
+                <div class="header-menu-group">
+                    <span class="header-menu-label" data-i18n="menu.language">Language</span>
+                    <select id="lang-select">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                        <option value="it">Italiano</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </header>
     <main class="profile-container">

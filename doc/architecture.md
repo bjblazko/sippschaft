@@ -54,22 +54,20 @@ C4Context
 
     System(sippschaft, "Sippschaft", "Go web server serving the family tree app")
 
-    System_Ext(cdn_d3, "CDN: d3js.org", "Serves D3.js v7")
     System_Ext(filesystem, "File System", "data/{person}/ folders")
 
     Rel(browser, sippschaft, "HTTP", "Views tree and profiles")
     Rel(editor, filesystem, "Edits", "YAML, Markdown, photos")
     Rel(sippschaft, filesystem, "Reads", "Person data at startup")
-    Rel(browser, cdn_d3, "HTTPS", "Loads D3.js")
 ```
 
 ### Boundary: What is inside vs. outside the system
 
 | Inside | Outside |
 |--------|---------|
-| Go HTTP server | CDN-hosted JS library (D3.js) |
-| HTML templates | File system (data files, images) |
-| Static assets (CSS, app JS, layout engine) | User's browser |
+| Go HTTP server | File system (data files, images) |
+| HTML templates | User's browser |
+| Static assets (CSS, JS, D3.js, layout engine) | |
 | JSON API | |
 
 ---
@@ -202,8 +200,9 @@ sequenceDiagram
     participant D3 as D3.js (client)
 
     Browser->>Server: GET /
-    Server-->>Browser: index.html (with CDN script tags)
-    Browser->>Browser: Load D3.js from CDN
+    Server-->>Browser: index.html
+    Browser->>Server: GET /static/js/d3.v7.min.js
+    Server-->>Browser: D3.js (vendored)
     Browser->>Server: GET /api/tree
     Server-->>Browser: JSON (all people)
     alt Classic View (default)
@@ -250,7 +249,7 @@ graph TD
         subgraph File System
             B["data/{person}/<br/>person.yaml + person.md + avatar.*"]
             D[static/css/style.css]
-            E[static/js/tree.js]
+            E["static/js/<br/>tree.js, theme.js, i18n.js, d3.v7.min.js"]
             F[templates/*.html]
         end
 
@@ -265,21 +264,14 @@ graph TD
         G[Browser]
     end
 
-    subgraph External CDNs
-        H[d3js.org]
-        I[cdnjs.cloudflare.com]
-    end
-
     G -->|HTTP :8080| A
-    G -->|HTTPS| H
-    G -->|HTTPS| I
 ```
 
 **Infrastructure requirements:**
 - Any machine with Go installed (or a pre-built binary)
 - No reverse proxy required (but recommended for production: nginx, Caddy)
-- No database, no message queue, no external services
-- Internet access needed for CDN-hosted JS (unless vendored locally)
+- No database, no message queue, no external services, no internet access required
+- Fully offline-capable: all dependencies (including D3.js) are vendored locally
 
 ---
 
@@ -309,9 +301,9 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 |---|-------------|----------|-------------|
 | R1 | No data validation | Medium | Referenced IDs (parents, spouses, children) are not checked for existence. Broken references fail silently in the UI. |
 | R2 | No tests | Medium | No unit or integration tests exist. Regressions can only be caught manually. |
-| R3 | CDN dependency | Low | D3.js is loaded from an external CDN. The app will not render the tree without internet access. Could be mitigated by vendoring. |
+| ~~R3~~ | ~~CDN dependency~~ | ~~Low~~ | ~~Resolved: D3.js is now vendored locally at `static/js/d3.v7.min.js`. The app is fully offline-capable.~~ |
 | R4 | Unidirectional relationships | Medium | If Alice lists Bob as a child, Bob does not automatically list Alice as a parent. Both sides must be manually maintained, which is error-prone. |
-| R5 | No hot reload of data | Low | Person data is loaded once at startup. File changes require a server restart. Mitigated by using `air` during development. |
+| ~~R5~~ | ~~No hot reload of data~~ | ~~Low~~ | ~~Resolved: The server polls the data directory every 2 seconds and automatically reloads when files change.~~ |
 | ~~R6~~ | ~~Hardcoded port~~ | ~~Low~~ | ~~Resolved: Port is now configurable via `--port` flag or `SIPPSCHAFT_PORT` env var (default 8080).~~ |
 | R7 | ~~Dagre unmaintained~~ | ~~Low~~ | ~~Resolved: Dagre replaced with custom genealogy layout algorithm.~~ |
 | R8 | Raw HTML injection | Low | Biography Markdown is rendered to HTML and inserted via `template.HTML` (unescaped). Safe as long as data files are author-controlled, but becomes a risk if user-submitted content is ever allowed. |
