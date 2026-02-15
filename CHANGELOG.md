@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] - 2026-02-15
+
+### Added
+
+- CI/CD: GitHub Actions release workflow triggered by `v*` tags, cross-compiling binaries for Linux (amd64), macOS (Intel + Apple Silicon), and Windows (amd64), bundled with static assets and published as GitHub Releases (ADR-012)
+
 ## [0.3.1] - 2026-02-15
 
 ### Fixed
