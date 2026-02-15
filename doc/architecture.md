@@ -273,6 +273,9 @@ graph TD
 - No database, no message queue, no external services, no internet access required
 - Fully offline-capable: all dependencies (including D3.js) are vendored locally
 
+**Pre-built release binaries:**
+Pushing a `v*` tag triggers a GitHub Actions workflow that cross-compiles binaries for Linux (amd64), macOS (amd64, arm64), and Windows (amd64). Each release archive bundles the binary with `static/` and `templates/` so users can run Sippschaft without a Go toolchain. See [ADR-012](adr/012-github-actions-release.md).
+
 ---
 
 ## 9. Architecture Decisions
@@ -292,6 +295,7 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 | [008](adr/008-theme-system.md) | CSS custom property theme system | Accepted |
 | [009](adr/009-static-export.md) | Static site export as ZIP | Accepted |
 | [010](adr/010-client-side-i18n.md) | Client-side i18n with `data-i18n` attributes | Accepted |
+| [012](adr/012-github-actions-release.md) | Tag-triggered GitHub Actions release workflow | Accepted |
 
 ---
 

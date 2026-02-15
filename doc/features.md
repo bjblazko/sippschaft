@@ -102,6 +102,7 @@ Items below are gaps or natural next steps identified from the current codebase.
 - [x] **Hot reload without restart** -- The server polls the data directory every 2 seconds and automatically reloads when files change.
 - [x] **Configurable port** -- Use `--port` flag or `SIPPSCHAFT_PORT` environment variable. Defaults to `8080`.
 - [x] **Static site export** -- `GET /export` downloads a ZIP with the complete tree as static HTML/JS/CSS. Works via `file://` or any static host.
+- [x] **Release binaries** -- Pushing a `v*` tag triggers a GitHub Actions workflow that builds cross-platform binaries (Linux, macOS Intel/ARM, Windows), bundles them with `static/` and `templates/`, and publishes them as a GitHub Release.
 - [ ] **Tests** -- No test files exist in the project.
 - [ ] **Docker support** -- No Dockerfile for containerized deployment.
-- [ ] **CI/CD** -- No GitHub Actions or similar pipeline.
+- [x] **CI/CD** -- Tag-triggered GitHub Actions workflow builds cross-platform release binaries.
