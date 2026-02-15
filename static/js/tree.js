@@ -212,8 +212,9 @@ function getBloodline(pid, peopleMap) {
         }
     });
 
-    // Add siblings of core members (other children of core members' parents).
-    // Siblings are included for context only — their own partners are NOT added.
+    // Add siblings of core members (other children of core members' parents)
+    // and all descendants of those siblings (cousins, etc.) plus their partners.
+    const siblings = new Set();
     core.forEach(id => {
         const person = peopleMap[id];
         if (!person || !person.parents) return;
@@ -221,10 +222,20 @@ function getBloodline(pid, peopleMap) {
             const parent = peopleMap[parentId];
             if (parent && parent.children) {
                 parent.children.forEach(sibId => {
+                    if (peopleMap[sibId] && !core.has(sibId)) {
+                        siblings.add(sibId);
+                    }
                     if (peopleMap[sibId]) bloodline.add(sibId);
                 });
             }
         });
+    });
+
+    // Include blood descendants of siblings (cousins, etc.)
+    // but NOT their married-in partners
+    siblings.forEach(sibId => {
+        const sibDescendants = getDescendants(sibId, peopleMap);
+        sibDescendants.forEach(did => bloodline.add(did));
     });
 
     return bloodline;
