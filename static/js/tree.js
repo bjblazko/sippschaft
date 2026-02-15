@@ -701,16 +701,14 @@ function measureTextWidth(text, fontSize, fontWeight) {
 function renderClassicTree(peopleMap) {
     const { width, height } = getContainerSize();
 
-    // Compute node width from the longest name
-    let maxNameW = 0;
-    Object.values(peopleMap).forEach(p => {
+    // Compute per-node width from each person's name
+    const nodeW = {};
+    Object.entries(peopleMap).forEach(([pid, p]) => {
         const label = p.name + " " + getGenderSymbol(p.sex);
         const w = measureTextWidth(label, "14px", "bold");
-        if (w > maxNameW) maxNameW = w;
+        const padding = p.photo ? 65 + 15 : 30;
+        nodeW[pid] = Math.max(120, Math.ceil(w + padding));
     });
-    const hasPhotos = Object.values(peopleMap).some(p => p.photo);
-    const padding = hasPhotos ? 65 + 15 : 30; // text offset + right margin
-    const NODE_W = Math.max(210, Math.ceil(maxNameW + padding));
     const NODE_H = 60, H_GAP = 40, V_GAP = 80, SPOUSE_GAP = 20;
 
     // === LAYOUT: Genealogy tree with global generation alignment ===
@@ -1261,7 +1259,7 @@ function renderClassicTree(peopleMap) {
         const groupMembers = getPartnerGroup(pid);
 
         // Header width for the couple/chain
-        const headerW = groupMembers.length * NODE_W + (groupMembers.length - 1) * SPOUSE_GAP;
+        const headerW = groupMembers.reduce((s, id) => s + nodeW[id], 0) + (groupMembers.length - 1) * SPOUSE_GAP;
 
         // Gather children assigned to this group via layoutChildren
         const children = [];
@@ -1304,7 +1302,7 @@ function renderClassicTree(peopleMap) {
     function effectiveGroupW(pid) {
         // Transitively collect all unplaced partners (traverse through placed ones)
         const groupMembers = getPartnerGroup(pid, id => placed.has(id));
-        const headerW = groupMembers.length * NODE_W + (groupMembers.length - 1) * SPOUSE_GAP;
+        const headerW = groupMembers.reduce((s, id) => s + nodeW[id], 0) + (groupMembers.length - 1) * SPOUSE_GAP;
 
         const children = [];
         const childSet = new Set();
@@ -1340,16 +1338,18 @@ function renderClassicTree(peopleMap) {
         );
 
         if (orderedMembers.length === 1) {
-            positions[pid] = { x: centerX, y };
+            positions[pid] = { x: centerX, y, w: nodeW[pid] };
             placed.add(pid);
         } else {
-            const chainW = orderedMembers.length * NODE_W + (orderedMembers.length - 1) * SPOUSE_GAP;
+            const chainW = orderedMembers.reduce((s, id) => s + nodeW[id], 0) + (orderedMembers.length - 1) * SPOUSE_GAP;
             const chainStart = centerX - chainW / 2;
-            orderedMembers.forEach((id, idx) => {
+            let cx = chainStart;
+            orderedMembers.forEach((id) => {
                 if (!placed.has(id)) {
-                    positions[id] = { x: chainStart + idx * (NODE_W + SPOUSE_GAP) + NODE_W / 2, y };
+                    positions[id] = { x: cx + nodeW[id] / 2, y, w: nodeW[id] };
                     placed.add(id);
                 }
+                cx += nodeW[id] + SPOUSE_GAP;
             });
         }
 
@@ -1467,7 +1467,7 @@ function renderClassicTree(peopleMap) {
 
         // Place this satellite to the right of everything currently placed
         const rightmostX = Object.values(positions).length > 0
-            ? Math.max(...Object.values(positions).map(p => p.x + NODE_W / 2))
+            ? Math.max(...Object.values(positions).map(p => p.x + p.w / 2))
             : 0;
         placeGroup(primaryPid, rightmostX + H_GAP * 2, gen);
     });
@@ -1477,9 +1477,9 @@ function renderClassicTree(peopleMap) {
         if (!placed.has(pid)) {
             const y = genMap[pid] * (NODE_H + V_GAP) + NODE_H / 2;
             const maxX = Object.values(positions).length > 0
-                ? Math.max(...Object.values(positions).map(p => p.x + NODE_W / 2))
+                ? Math.max(...Object.values(positions).map(p => p.x + p.w / 2))
                 : 0;
-            positions[pid] = { x: maxX + H_GAP + NODE_W / 2, y };
+            positions[pid] = { x: maxX + H_GAP + nodeW[pid] / 2, y, w: nodeW[pid] };
             placed.add(pid);
         }
     });
@@ -1488,8 +1488,8 @@ function renderClassicTree(peopleMap) {
     // Shift all positions so minimum x has a margin
     let minX = Infinity, maxX = -Infinity, maxY = 0;
     Object.values(positions).forEach(pos => {
-        minX = Math.min(minX, pos.x - NODE_W / 2);
-        maxX = Math.max(maxX, pos.x + NODE_W / 2);
+        minX = Math.min(minX, pos.x - pos.w / 2);
+        maxX = Math.max(maxX, pos.x + pos.w / 2);
         maxY = Math.max(maxY, pos.y + NODE_H / 2);
     });
     const margin = 30;
@@ -1600,8 +1600,8 @@ function renderClassicTree(peopleMap) {
             // Couple line: solid for spouses, dashed for co-parents
             inner.append("line")
                 .attr("data-pids", parentPids)
-                .attr("x1", leftPos.x + NODE_W / 2).attr("y1", coupleY)
-                .attr("x2", rightPos.x - NODE_W / 2).attr("y2", coupleY)
+                .attr("x1", leftPos.x + leftPos.w / 2).attr("y1", coupleY)
+                .attr("x2", rightPos.x - rightPos.w / 2).attr("y2", coupleY)
                 .attr("stroke", famColor).attr("stroke-width", 2)
                 .attr("stroke-dasharray", isSpouse ? "none" : "6,4");
 
@@ -1711,7 +1711,7 @@ function renderClassicTree(peopleMap) {
 
         const group = inner.append("g")
             .attr("data-pid", pid)
-            .attr("transform", `translate(${pos.x - NODE_W / 2}, ${pos.y - NODE_H / 2})`)
+            .attr("transform", `translate(${pos.x - pos.w / 2}, ${pos.y - NODE_H / 2})`)
             .style("cursor", "pointer")
             .on("click", () => {
                 if (classicClickTimer) clearTimeout(classicClickTimer);
@@ -1745,7 +1745,7 @@ function renderClassicTree(peopleMap) {
         );
 
         group.append("rect")
-            .attr("width", NODE_W)
+            .attr("width", pos.w)
             .attr("height", NODE_H)
             .attr("rx", 5).attr("ry", 5)
             .attr("fill", getGenderColor(p.sex))
@@ -1761,7 +1761,7 @@ function renderClassicTree(peopleMap) {
                 .attr("preserveAspectRatio", "xMidYMid slice");
         }
 
-        const textX = p.photo ? 65 : NODE_W / 2;
+        const textX = p.photo ? 65 : pos.w / 2;
         const textAnchor = p.photo ? "start" : "middle";
 
         group.append("text")
