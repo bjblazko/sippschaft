@@ -13,10 +13,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Ellipsis menu (⋮) in the header containing export and language controls
 - Static site export: `GET /export` returns a ZIP archive containing the complete family tree as a self-contained static site (ADR-009)
 - Tree page in export uses inline JSON data instead of API fetch, enabling `file://` usage without a server
+- Configurable port via `--port` flag or `SIPPSCHAFT_PORT` environment variable (defaults to 8080)
+- Mobile-friendly responsive CSS for header, profile cards, and tree controls
+
+### Changed
+
+- Replaced custom genealogy layout with seven-phase Sugiyama-style layered graph algorithm (ADR-011, supersedes ADR-007)
+  - BFS generation assignment through all relationship types ensures couples share a row
+  - Transitive partner group collection handles multi-partner chains (A-B-C) as one atomic unit
+  - Crossing minimisation via weighted barycenter heuristic, adjacent swap with sibling proximity tiebreaker, and Hamiltonian path ordering for multi-partner blocks
+  - Satellite families (in-law ancestors) placed to the right of the main tree to prevent overlaps
+  - Color-coded family connection lines using golden-angle HSL spacing with staggered bar heights for overlapping families
+- Tree node width auto-sized to fit the longest person name
 
 ### Fixed
 
 - Person profile relationship links now show display names instead of raw folder IDs
+- Satellite roots (in-law ancestors) now correctly find their bridge person via data children links instead of spanning tree assignments
+- Hidden directories in the data folder are now skipped during person loading
 
 ## [0.2.0] - 2026-02-13
 

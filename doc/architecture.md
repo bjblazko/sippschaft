@@ -67,9 +67,9 @@ C4Context
 
 | Inside | Outside |
 |--------|---------|
-| Go HTTP server | CDN-hosted JS libraries (D3, Dagre) |
+| Go HTTP server | CDN-hosted JS library (D3.js) |
 | HTML templates | File system (data files, images) |
-| Static assets (CSS, app JS) | User's browser |
+| Static assets (CSS, app JS, layout engine) | User's browser |
 | JSON API | |
 
 ---
@@ -80,7 +80,7 @@ C4Context
 |----------|-----------|-----|
 | Go standard library for HTTP | No framework overhead, single binary, zero config | [ADR-001](adr/001-go-stdlib.md) |
 | Markdown files as data source | Human-readable, Git-friendly, no database | [ADR-002](adr/002-markdown-data.md) |
-| D3.js + custom layout for visualization | D3 for SVG rendering/zoom, custom genealogy-aware layout algorithm | [ADR-003](adr/003-d3-dagre.md) |
+| D3.js + Sugiyama-style layout for visualization | D3 for SVG rendering/zoom, custom seven-phase genealogy-aware layout | [ADR-011](adr/011-sugiyama-layout.md) |
 | Goldmark for Markdown rendering | CommonMark-compliant, actively maintained | [ADR-004](adr/004-goldmark.md) |
 | Folder-per-person data structure | Co-locates metadata, biography, and assets | [ADR-006](adr/006-folder-per-person.md) |
 | Static site export as ZIP | Single-request export, works offline via `file://` | [ADR-009](adr/009-static-export.md) |
@@ -198,18 +198,22 @@ sequenceDiagram
 sequenceDiagram
     participant Browser
     participant Server as Go Server
+    participant Layout as tree.js Layout Engine
     participant D3 as D3.js (client)
-    participant Dagre as Dagre (client)
 
     Browser->>Server: GET /
     Server-->>Browser: index.html (with CDN script tags)
-    Browser->>Browser: Load D3.js & Dagre from CDN
+    Browser->>Browser: Load D3.js from CDN
     Browser->>Server: GET /api/tree
     Server-->>Browser: JSON (all people)
     alt Classic View (default)
-        Browser->>Dagre: Build graph layout
-        Dagre-->>Browser: Node positions
-        Browser->>D3: Render SVG nodes & edges
+        Browser->>Layout: renderClassicTree(data)
+        Layout->>Layout: Assign generations (BFS)
+        Layout->>Layout: Crossing minimisation (barycenter + swaps)
+        Layout->>Layout: Compute widths bottom-up
+        Layout->>Layout: Assign positions top-down
+        Layout->>Layout: Place satellite families
+        Layout->>D3: Render SVG nodes & colour-coded family lines
     else Force View
         Browser->>D3: Create force simulation
         D3-->>Browser: Animated SVG with drag & zoom
@@ -288,12 +292,14 @@ Recorded as individual ADR files in [doc/adr/](adr/):
 | [001](adr/001-go-stdlib.md) | Use Go standard library over a web framework | Accepted |
 | [002](adr/002-markdown-data.md) | Markdown files as the data source (no database) | Accepted |
 | [003](adr/003-d3-dagre.md) | D3.js for tree visualization (Dagre removed) | Superseded by 007 |
-| [007](adr/007-custom-layout.md) | Custom genealogy layout replacing Dagre | Accepted |
+| [007](adr/007-custom-layout.md) | Custom genealogy layout replacing Dagre | Superseded by 011 |
+| [011](adr/011-sugiyama-layout.md) | Sugiyama-style layout with satellite placement | Accepted |
 | [004](adr/004-goldmark.md) | Goldmark for Markdown rendering | Accepted |
 | [005](adr/005-yaml-frontmatter.md) | YAML frontmatter for person metadata | Superseded by 006 |
 | [006](adr/006-folder-per-person.md) | Folder-per-person data structure | Accepted |
 | [008](adr/008-theme-system.md) | CSS custom property theme system | Accepted |
 | [009](adr/009-static-export.md) | Static site export as ZIP | Accepted |
+| [010](adr/010-client-side-i18n.md) | Client-side i18n with `data-i18n` attributes | Accepted |
 
 ---
 

@@ -6,7 +6,7 @@
 
 Two visualization modes on the main page:
 
-- **Classic View** -- Hierarchical tree layout using a custom genealogy-aware algorithm. Parents are placed above their children, spouses are adjacent, and multi-spouse families use a couple-chain layout. Nodes show name, gender symbol, birth/death years, and optional photo.
+- **Classic View** -- Hierarchical tree layout using a seven-phase Sugiyama-style layered graph algorithm (see [ADR-011](adr/011-sugiyama-layout.md) for full details). A BFS traversal through all relationship types (parents, children, spouses, co-parents) assigns generations, ensuring all couples and in-law families are on the same row. Partner groups are collected transitively (A-B-C chains treated as one atomic unit). The layout handles multi-family trees by building a spanning tree via BFS, computing block widths bottom-up, and assigning positions top-down. Satellite families (in-law ancestors) are placed to the right of the main tree to prevent overlaps. Crossing minimization uses weighted barycenter heuristic with alternating top-down/bottom-up passes, adjacent swap optimization with sibling proximity tiebreaker, and Hamiltonian path ordering for multi-partner blocks (hub person placed in the middle). Family connection lines are color-coded so each parent pair has a unique color (golden-angle HSL spacing), with staggered bar heights when multiple families connect between the same generations. Nodes show name, gender symbol, birth/death years, and optional photo.
 - **Force View** -- Physics-based D3 force simulation. Nodes can be dragged freely. Parent-child links are solid lines; spouse links are dashed red lines.
 
 Both views support zoom and pan via mouse/trackpad.
