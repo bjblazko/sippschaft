@@ -53,6 +53,27 @@ See the [Person Author Guide](doc/person-guide.md) for the full YAML reference, 
 
 ## Running the App
 
+### Using a pre-built release (no Go required)
+
+Download the latest archive for your platform from the [Releases](https://github.com/bjblazko/sippschaft/releases) page:
+
+| Platform | Archive |
+|----------|---------|
+| Linux (x86-64) | `sippschaft-vX.Y.Z-linux-amd64.tar.gz` |
+| macOS Intel | `sippschaft-vX.Y.Z-darwin-amd64.tar.gz` |
+| macOS Apple Silicon | `sippschaft-vX.Y.Z-darwin-arm64.tar.gz` |
+| Windows (x86-64) | `sippschaft-vX.Y.Z-windows-amd64.zip` |
+
+Extract the archive and run the binary:
+
+```
+./sippschaft
+```
+
+The archive includes the `static/` and `templates/` directories the app needs at runtime. Place your family data in a `data/` directory next to the binary (or use `--data` to point elsewhere).
+
+### Building from source
+
 Make sure [Go](https://go.dev/) is installed, then:
 
 ```
@@ -61,28 +82,30 @@ go run main.go
 
 Open [http://localhost:8080](http://localhost:8080) in your browser.
 
+### Configuration
+
 By default the app reads family data from the `data/` directory. To use a different directory:
 
 ```
-go run main.go --data /path/to/my/family
+./sippschaft --data /path/to/my/family
 ```
 
 Or set the `SIPPSCHAFT_DATA` environment variable:
 
 ```
-SIPPSCHAFT_DATA=/path/to/my/family go run main.go
+SIPPSCHAFT_DATA=/path/to/my/family ./sippschaft
 ```
 
 To listen on a different port (default is 8080):
 
 ```
-go run main.go --port 3000
+./sippschaft --port 3000
 ```
 
 Or set the `SIPPSCHAFT_PORT` environment variable:
 
 ```
-SIPPSCHAFT_PORT=3000 go run main.go
+SIPPSCHAFT_PORT=3000 ./sippschaft
 ```
 
 ## Exporting as Static Site
