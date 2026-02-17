@@ -200,25 +200,15 @@ function getBloodline(pid, peopleMap) {
 
     const bloodline = new Set(core);
 
-    // Ensure both parents of every core member are included
-    // (ancestors already have parents via getAncestors; this covers
-    // descendants whose other parent is outside the direct line)
-    core.forEach(id => {
-        const person = peopleMap[id];
-        if (person && person.parents) {
-            person.parents.forEach(parentId => {
-                if (peopleMap[parentId]) bloodline.add(parentId);
-            });
-        }
-    });
-
-    // Add siblings of core members (other children of core members' parents)
-    // and all descendants of those siblings (cousins, etc.) plus their partners.
+    // Add siblings of core members, but only through parents who are
+    // themselves in the core set (blood relatives). This prevents
+    // following married-in parents and pulling in unrelated step-siblings.
     const siblings = new Set();
     core.forEach(id => {
         const person = peopleMap[id];
         if (!person || !person.parents) return;
         person.parents.forEach(parentId => {
+            if (!core.has(parentId)) return;
             const parent = peopleMap[parentId];
             if (parent && parent.children) {
                 parent.children.forEach(sibId => {

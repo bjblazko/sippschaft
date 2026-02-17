@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.1] - 2026-02-17
+
+### Fixed
+
+- Bloodline focus mode no longer includes married-in partners (spouses of descendants) or step-relatives (half-siblings through a non-blood parent). Siblings are now only traced through parents who are themselves blood relatives of the focused person.
+
 ## [0.4.0] - 2026-02-15
 
 ### Added
