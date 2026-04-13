@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="trunk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4A7C59"/>
+      <stop offset="100%" stop-color="#2D5A3F"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6DB87B"/>
+      <stop offset="100%" stop-color="#4A7C59"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Trunk / stem growing upward -->
+  <path d="M128 230 L128 140" stroke="url(#trunk)" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+  <!-- Left branch -->
+  <path d="M128 170 Q108 155 88 140" stroke="url(#trunk)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Right branch -->
+  <path d="M128 170 Q148 155 168 140" stroke="url(#trunk)" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- Upper left branch -->
+  <path d="M128 150 Q98 130 68 110" stroke="url(#trunk)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- Upper right branch -->
+  <path d="M128 150 Q158 130 188 110" stroke="url(#trunk)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Top branches -->
+  <path d="M128 140 Q118 120 108 95" stroke="url(#trunk)" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M128 140 Q138 120 148 95" stroke="url(#trunk)" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Root node (bottom) - the "you" -->
+  <circle cx="128" cy="230" r="14" fill="#2D5A3F"/>
+  <circle cx="128" cy="230" r="9" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="128" cy="230" r="5" fill="#2D5A3F"/>
+
+  <!-- Generation 1 - parents -->
+  <circle cx="88" cy="140" r="12" fill="#4A7C59"/>
+  <circle cx="88" cy="140" r="7" fill="#FFFFFF" opacity="0.9"/>
+
+  <circle cx="168" cy="140" r="12" fill="#4A7C59"/>
+  <circle cx="168" cy="140" r="7" fill="#FFFFFF" opacity="0.9"/>
+
+  <!-- Generation 2 - grandparents -->
+  <circle cx="68" cy="110" r="10" fill="url(#leaf)"/>
+  <circle cx="68" cy="110" r="6" fill="#FFFFFF" opacity="0.85"/>
+
+  <circle cx="108" cy="95" r="10" fill="url(#leaf)"/>
+  <circle cx="108" cy="95" r="6" fill="#FFFFFF" opacity="0.85"/>
+
+  <circle cx="148" cy="95" r="10" fill="url(#leaf)"/>
+  <circle cx="148" cy="95" r="6" fill="#FFFFFF" opacity="0.85"/>
+
+  <circle cx="188" cy="110" r="10" fill="url(#leaf)"/>
+  <circle cx="188" cy="110" r="6" fill="#FFFFFF" opacity="0.85"/>
+
+  <!-- Leaf accents on top nodes -->
+  <ellipse cx="58" cy="98" rx="8" ry="5" fill="#6DB87B" opacity="0.5" transform="rotate(-30 58 98)"/>
+  <ellipse cx="100" cy="83" rx="8" ry="5" fill="#6DB87B" opacity="0.5" transform="rotate(-15 100 83)"/>
+  <ellipse cx="156" cy="83" rx="8" ry="5" fill="#6DB87B" opacity="0.5" transform="rotate(15 156 83)"/>
+  <ellipse cx="198" cy="98" rx="8" ry="5" fill="#6DB87B" opacity="0.5" transform="rotate(30 198 98)"/>
+
+  <!-- Small decorative dots - suggesting more ancestors -->
+  <circle cx="48" cy="85" r="3" fill="#6DB87B" opacity="0.4"/>
+  <circle cx="78" cy="75" r="3" fill="#6DB87B" opacity="0.4"/>
+  <circle cx="128" cy="70" r="3" fill="#6DB87B" opacity="0.4"/>
+  <circle cx="178" cy="75" r="3" fill="#6DB87B" opacity="0.4"/>
+  <circle cx="208" cy="85" r="3" fill="#6DB87B" opacity="0.4"/>
+</svg>
